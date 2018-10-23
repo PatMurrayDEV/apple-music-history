@@ -3,9 +3,21 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@vtex/react-csv-parse": "^3.0.2",
+    "@vx/group": "0.0.170",
+    "@vx/mock-data": "0.0.179",
+    "@vx/scale": "0.0.179",
+    "@vx/shape": "0.0.179",
+    "chart.js": "^1.1.1",
+    "numeral": "^2.0.6",
     "react": "^16.5.2",
+    "react-chartjs": "^1.2.0",
     "react-dom": "^16.5.2",
-    "react-scripts": "2.0.5"
+    "react-file-reader": "^1.1.4",
+    "react-intl": "^2.7.1",
+    "react-intl-formatted-duration": "^2.0.2",
+    "react-scripts": "2.0.5",
+    "react-table": "^6.8.6"
   },
   "scripts": {
     "start": "react-scripts start",
