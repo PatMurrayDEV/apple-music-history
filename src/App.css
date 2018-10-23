@@ -1,0 +1,25 @@
+.box {
+    box-shadow: 0 5px 25px rgba(0, 0, 0, .15);
+    padding: 1em;
+}
+
+.year {
+    width: 300px;
+    background-color: white;
+    margin: 1em;
+    flex-direction: column;
+    display: flex;
+    justify-content: space-between;
+}
+
+.years {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+.linechart {
+    margin: 2em auto;
+    width: 620px;
+    height: 320px;
+}
