@@ -231,7 +231,11 @@ class Computation {
 
         var filteredSongs = [] 
         for (let index = 0; index < result.length; index++) {
-            if (!result[index].excluded) { filteredSongs.push(result[index]) }
+            if (!result[index].value.excluded) { 
+                filteredSongs.push(result[index]);
+            } else {
+                console.log(result[index]);
+            }
         }
 
 

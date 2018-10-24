@@ -18,7 +18,6 @@ class Results extends Component {
     }
 
     addExcluded(row) {
-        console.log(row);
         var key = row.original.key;
 
         var excludedSongs = this.state.excludedSongs;
@@ -140,6 +139,7 @@ class Results extends Component {
         }
 
 
+        
 
 
         var yearsBoxes = [];
@@ -163,8 +163,6 @@ class Results extends Component {
         var linechart = <LineChart data={Computation.convetrData(this.state.months)} width="600" height="300" options={{ bezierCurve: true, bezierCurveTension: 0.8, pointDot: false }} />
 
         var reasonsBoxes = [];
-
-        console.log(this.state);
 
         for (let index = 0; index < this.state.reasons.length; index++) {
             const element = this.state.reasons[index];
@@ -259,16 +257,19 @@ class Results extends Component {
             }}
         />
 
+        var topSong = this.state.filteredSongs[0];
+
+        var topSongBox = <div className="box" style={{ maxWidth: "calc(6em + 4 * 300px)" }}>
+            <h3>Your most played song on Apple Music is</h3>
+            <h1 className="display-3"><p>{topSong.key}</p></h1>
+            <p className="lead">You've played this <strong>{topSong.value.plays}</strong> times for a total of <strong>{Computation.convertTime(topSong.value.time)}</strong>, skipping {Computation.convertTime(topSong.value.missedTime)}</p>
+        </div>;
 
 
         return (
             <div>
                 <Jumbotron>
-                    <div className="box" style={{maxWidth: "calc(6em + 4 * 300px)"}}>
-                        <h3>Your most played song on Apple Music is</h3>
-                        <h1 className="display-3"><p>{this.state.filteredSongs[0].key}</p></h1>
-                        <p className="lead">You've played this <strong>{this.state.filteredSongs[0].value.plays}</strong> times for a total of <strong>{Computation.convertTime(this.state.filteredSongs[0].value.time)}</strong>, skipping {Computation.convertTime(this.state.filteredSongs[0].value.missedTime)}</p>
-                    </div>
+                    {topSongBox}
                     <div className="years">{yearsBoxes}</div>
                     <div className="years">
                         {totalsBox}
