@@ -87,9 +87,14 @@ class Banner extends Component {
                             }}
                             render={onChange => <input type="file" onChange={onChange} />}
                         />
-                        <Loader loading={this.state.loading}/>
+                        <Loader loading={this.state.loading} />
                     </Alert>
                 </Jumbotron>
+                <div className="box">
+                <a href="/image2.png"><img style={{ width: '300px' }} src={"/image2.png"} alt="" /></a>
+                <a href="/image1.png"><img style={{ width: '300px' }} src={"/image1.png"} alt="" /></a>  
+                </div>
+
 
             </div>
         );
