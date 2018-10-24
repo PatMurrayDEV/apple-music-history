@@ -266,8 +266,8 @@ class Results extends Component {
                 <Jumbotron>
                     <div className="box" style={{maxWidth: "calc(6em + 4 * 300px)"}}>
                         <h3>Your most played song on Apple Music is</h3>
-                        <h1 className="display-3"><p>{this.state.songs[0].key}</p></h1>
-                        <p className="lead">You've played this <strong>{this.state.songs[0].value.plays}</strong> times for a total of <strong>{Computation.convertTime(this.state.songs[0].value.time)}</strong>, skipping {Computation.convertTime(this.state.songs[0].value.missedTime)}</p>
+                        <h1 className="display-3"><p>{this.state.filteredSongs[0].key}</p></h1>
+                        <p className="lead">You've played this <strong>{this.state.filteredSongs[0].value.plays}</strong> times for a total of <strong>{Computation.convertTime(this.state.filteredSongs[0].value.time)}</strong>, skipping {Computation.convertTime(this.state.filteredSongs[0].value.missedTime)}</p>
                     </div>
                     <div className="years">{yearsBoxes}</div>
                     <div className="years">
