@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Jumbotron } from 'reactstrap';
+import { Jumbotron, Button } from 'reactstrap';
 import Computation from "./Computation";
 import numeral from 'numeral';
 import 'react-table/react-table.css';
@@ -15,6 +15,50 @@ class Results extends Component {
     constructor(props) {
         super(props);
         this.state = props.data;
+    }
+
+    addExcluded(row) {
+        console.log(row);
+        var key = row.original.key;
+
+        var excludedSongs = this.state.excludedSongs;
+        if (excludedSongs.includes(key)) {
+            excludedSongs = excludedSongs.filter(item => item !== key);
+        } else {
+            excludedSongs.push(key);
+        }
+
+        var results = Computation.calculateTop(this.state.data, excludedSongs);
+
+        this.setState({
+            songs: results.songs,
+            days: results.days,
+            months: results.months,
+            reasons: results.reasons,
+            data: this.state.data,
+            years: results.years,
+            artists: results.artists,
+            totals: results.totals,
+            filteredSongs: results.filteredSongs,
+            excludedSongs: results.excludedSongs
+        });
+
+    }
+
+    clearExcluded() {
+        var results = Computation.calculateTop(this.state.data, []);
+        this.setState({
+            songs: results.songs,
+            days: results.days,
+            months: results.months,
+            reasons: results.reasons,
+            data: this.state.data,
+            years: results.years,
+            artists: results.artists,
+            totals: results.totals,
+            filteredSongs: results.filteredSongs,
+            excludedSongs: results.excludedSongs
+        });
     }
 
     render() {
@@ -42,7 +86,6 @@ class Results extends Component {
                 <p className="lead">of music</p>
             </div>
             <div>
-                <hr className="my-2" />
                 <h2>{numeral(this.state.totals.totalPlays).format('0,0')}</h2>
                 <p className="lead">plays</p>
             </div>
@@ -52,11 +95,12 @@ class Results extends Component {
             <div>
                 <p className="lead">On</p>
                 <h3>{this.state.days[0].key}</h3>
-            </div>
-            <div>
                 <p className="lead">you listened to</p>
                 <h3>{Computation.convertTime(this.state.days[0].value.time)}</h3>
                 <p className="lead">of music</p>
+            </div>
+            <div>
+
             </div>
         </div>
 
@@ -64,19 +108,26 @@ class Results extends Component {
             <div>
                 <h2>{numeral(this.state.songs.length).format('0,0')}</h2>
                 <p className="lead">songs</p>
+                <hr className="my-2" />
             </div>
             <div>
                 <h2>{numeral(this.state.artists.length).format('0,0')}</h2>
                 <p className="lead">artists</p>
+                <hr className="my-2" />
+            </div>
+            <div>
+                <h2>{numeral(this.state.totals.totalLyrics).format('0,0')}</h2>
+                <p className="lead">times viewed lyrics</p>
             </div>
         </div>
 
 
         var artistBoxes = [];
-        for (let index = 0; index < 4; index++) {
+        for (let index = 0; index < 8; index++) {
             const artist = this.state.artists[index];
             const div = <div className="box year" key={artist.key}>
                 <div>
+                    <p style={{ marginBottom: 0 }}>Most played artist {index + 1}</p>
                     <h1>{artist.key}</h1>
                 </div>
                 <div>
@@ -186,9 +237,15 @@ class Results extends Component {
                         {
                             Header: "Exclude",
                             id: "exclude",
-                            accessor: d => d.value.name,
-                            Cell: row => (
-                                <div>{numeral(row.value / 1000).format('00:00:00')}</div>
+                            accessor: d => d.value.excluded,
+                            Cell: d => (
+                                <div><input
+                                    name="isExcluded"
+                                    type="checkbox"
+                                    checked={d.value}
+                                    onChange={e => {
+                                        this.addExcluded(d);
+                                    }} /></div>
                             ),
                             filterable: false
                         }
@@ -202,12 +259,14 @@ class Results extends Component {
             }}
         />
 
+
+
         return (
             <div>
                 <Jumbotron>
                     <h3>Your most played song on Apple Music is</h3>
                     <h1 className="display-3"><p>{this.state.songs[0].key}</p></h1>
-                    <p className="lead">You've played this {this.state.songs[0].value.plays} times for a total of {Computation.convertTime(this.state.songs[0].value.time)}, skipping {Computation.convertTime(this.state.songs[0].value.missedTime)}</p>
+                    <p className="lead">You've played this <strong>{this.state.songs[0].value.plays}</strong> times for a total of <strong>{Computation.convertTime(this.state.songs[0].value.time)}</strong>, skipping {Computation.convertTime(this.state.songs[0].value.missedTime)}</p>
                     <hr className="my-2" />
                     <div className="years">{yearsBoxes}</div>
                     <div className="years">
@@ -215,10 +274,10 @@ class Results extends Component {
                         {highestDay}
                         {totalSongs}
                     </div>
-                    <div className="years">
+                    <div className="years artists">
                         {artistBoxes}
                     </div>
-                </Jumbotron>
+                
 
 
                 <div className="box linechart">
@@ -231,11 +290,12 @@ class Results extends Component {
                 </div>
 
                 <div className="box">
-                    <h1>All Songs</h1>
+                    <div className="title-flex"><h1>All Songs</h1> <Button outline color="secondary" size="sm" onClick={() => this.clearExcluded()} active={this.state.excludedSongs.length > 0}>Clear Excluded ({this.state.excludedSongs.length})</Button></div>
+
                     {table}
                 </div>
 
-
+                </Jumbotron>
 
 
             </div>

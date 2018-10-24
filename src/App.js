@@ -14,7 +14,7 @@ class App extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { songs: [], days: [], data: [], months: [], reasons: {}, years: [], totals: {}, artists: [] };
+    this.state = { songs: [], days: [], data: [], months: [], reasons: {}, years: [], totals: {}, artists: [], filteredSongs: [], excludedSongs: [] };
   }
 
 
@@ -27,9 +27,9 @@ class App extends Component {
     var appToLoad;
 
     if (this.state.songs.length > 0) {
-      appToLoad = <Results data={this.state} />
+      appToLoad = <Results data={this.state} />;
     } else {
-      appToLoad = <Banner dataResponseHandler={data => this.setState(data)} />
+      appToLoad = <Banner dataResponseHandler={data => this.setState(data)} />;
     }
 
     return (

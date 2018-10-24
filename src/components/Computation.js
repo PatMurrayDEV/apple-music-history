@@ -2,13 +2,12 @@ class Computation {
 
     static monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-    
+
 
     static convetrData(input) {
         var data = {
             labels: [],
-            datasets: [
-                {
+            datasets: [{
                     label: "Played Hours",
                     fillColor: "rgba(220,220,220,0.2)",
                     strokeColor: "#FB7E2A",
@@ -47,10 +46,10 @@ class Computation {
     }
 
     static convertTime(timeinmilli) {
-        var seconds     = parseInt(timeinmilli=timeinmilli/1000)%60;
-        var minutes     = parseInt(timeinmilli=timeinmilli/60)%60;
-        var hours       = parseInt(timeinmilli=timeinmilli/60)%24;
-        var days        =  parseInt(timeinmilli=timeinmilli/24);
+        var seconds = parseInt(timeinmilli = timeinmilli / 1000) % 60;
+        var minutes = parseInt(timeinmilli = timeinmilli / 60) % 60;
+        var hours = parseInt(timeinmilli = timeinmilli / 60) % 24;
+        var days = parseInt(timeinmilli = timeinmilli / 24);
 
         var string = "";
 
@@ -90,16 +89,17 @@ class Computation {
         return result
     }
 
-    static calculateTop(data) {
+    static calculateTop(data, excludedSongs) {
 
         var songs = {};
-        var artists ={};
+        var artists = {};
         var yearSongs = {};
         var days = {};
         var months = {};
         var totals = {
             totalPlays: 0,
-            totalTime: 0
+            totalTime: 0,
+            totalLyrics: 0
         };
         var reasons = {
             "SCRUB_END": 0,
@@ -121,7 +121,7 @@ class Computation {
             const play = data[index];
 
 
-            if (play["Song Name"].length > 0 && Number(play["Media Duration In Milliseconds"]) > 0 && play["Item Type"] !== "ORIGINAL_CONTENT_SHOWS") {
+            if (play["Song Name"].length > 0 && Number(play["Media Duration In Milliseconds"]) > 0 && play["Item Type"] !== "ORIGINAL_CONTENT_SHOWS" && play["Media Type"] !== "VIDEO") {
                 const uniqueID = "'" + play["Song Name"] + "' by " + play["Artist Name"];
                 reasons[play["End Reason Type"]] = reasons[play["End Reason Type"]] + 1;
 
@@ -134,7 +134,8 @@ class Computation {
                             time: 0,
                             name: play["Song Name"],
                             artist: play["Artist Name"],
-                            missedTime: 0
+                            missedTime: 0,
+                            excluded: excludedSongs.includes(uniqueID)
                         };
                     }
 
@@ -143,76 +144,81 @@ class Computation {
                     var missedMilliseconds = Number(play["Media Duration In Milliseconds"]) - Number(play["Play Duration Milliseconds"])
                     songs[uniqueID].missedTime = Number(songs[uniqueID].missedTime) + missedMilliseconds;
 
-                    totals.totalPlays = totals.totalPlays + 1;
-                    totals.totalTime = Number(totals.totalTime) + Number(play["Play Duration Milliseconds"]);
+                    if (!songs[uniqueID].excluded) {
 
-                    if (artists[play["Artist Name"]] == null) {
-                        artists[play["Artist Name"]] = {
-                            plays: 0,
-                            time: 0,
-                            missedTime: 0
-                        };
+                        totals.totalPlays = totals.totalPlays + 1;
+                        totals.totalTime = Number(totals.totalTime) + Number(play["Play Duration Milliseconds"]);
+
+                        if (artists[play["Artist Name"]] == null) {
+                            artists[play["Artist Name"]] = {
+                                plays: 0,
+                                time: 0,
+                                missedTime: 0
+                            };
+                        }
+                        artists[play["Artist Name"]].plays = artists[play["Artist Name"]].plays + 1;
+                        artists[play["Artist Name"]].time = Number(artists[play["Artist Name"]].time) + Number(play["Play Duration Milliseconds"]);
+                        artists[play["Artist Name"]].missedTime = Number(artists[play["Artist Name"]].missedTime) + missedMilliseconds;
+
+
+                        var date = new Date(play["Event End Timestamp"]);
+                        var dayID = date.getDate() + " " + Computation.monthNames[date.getMonth()] + ", " + date.getFullYear();
+
+                        if (days[dayID] == null) {
+                            days[dayID] = {
+                                plays: 0,
+                                time: 0
+                            };
+                        }
+
+                        days[dayID].plays = days[dayID].plays + 1;
+                        days[dayID].time = Number(days[dayID].time) + Number(play["Play Duration Milliseconds"]);
+
+
+                        var monthID = date.getFullYear() + "-" + Computation.monthNames[date.getMonth()]
+
+                        if (months[monthID] == null) {
+                            months[monthID] = {
+                                plays: 0,
+                                time: 0,
+                                missedTime: 0
+                            };
+                        }
+
+                        months[monthID].plays = months[monthID].plays + 1;
+                        months[monthID].time = Number(months[monthID].time) + Number(play["Play Duration Milliseconds"]);
+                        months[monthID].missedTime = Number(months[monthID].missedTime) + missedMilliseconds;
+
+                        var yearID = date.getFullYear()
+
+                        if (yearSongs[yearID] == null) {
+                            yearSongs[yearID] = {};
+                        }
+
+                        if (yearSongs[yearID][uniqueID] == null) {
+                            yearSongs[yearID][uniqueID] = {
+                                plays: 0,
+                                time: 0,
+                                name: play["Song Name"],
+                                artist: play["Artist Name"],
+                                missedTime: 0
+                            };
+                        }
+
+                        yearSongs[yearID][uniqueID].plays = yearSongs[yearID][uniqueID].plays + 1;
+                        yearSongs[yearID][uniqueID].time = Number(yearSongs[yearID][uniqueID].time) + Number(play["Play Duration Milliseconds"]);
+                        yearSongs[yearID][uniqueID].missedTime = Number(yearSongs[yearID][uniqueID].missedTime) + missedMilliseconds;
+
+
                     }
-                    artists[play["Artist Name"]].plays = artists[play["Artist Name"]].plays + 1;
-                    artists[play["Artist Name"]].time = Number(artists[play["Artist Name"]].time) + Number(play["Play Duration Milliseconds"]);
-                    artists[play["Artist Name"]].missedTime = Number(artists[play["Artist Name"]].missedTime) + missedMilliseconds;
 
 
-                    var date = new Date(play["Event End Timestamp"]);
-                    var dayID = date.getDate() + " " + Computation.monthNames[date.getMonth()] + ", " + date.getFullYear();
-
-                    if (days[dayID] == null) {
-                        days[dayID] = {
-                            plays: 0,
-                            time: 0
-                        };
-                    }
-
-                    days[dayID].plays = days[dayID].plays + 1;
-                    days[dayID].time = Number(days[dayID].time) + Number(play["Play Duration Milliseconds"]);
-
-
-                    var monthID = date.getFullYear() + "-" + Computation.monthNames[date.getMonth()]
-
-                    if (months[monthID] == null) {
-                        months[monthID] = {
-                            plays: 0,
-                            time: 0,
-                            missedTime: 0
-                        };
-                    }
-
-                    months[monthID].plays = months[monthID].plays + 1;
-                    months[monthID].time = Number(months[monthID].time) + Number(play["Play Duration Milliseconds"]);
-                    months[monthID].missedTime = Number(months[monthID].missedTime) + missedMilliseconds;
-
-                    var yearID = date.getFullYear()
-
-                    if (yearSongs[yearID] == null) {
-                        yearSongs[yearID] = {
-                        };
-                    }
-
-                    if (yearSongs[yearID][uniqueID] == null) {
-                        yearSongs[yearID][uniqueID] = {
-                            plays: 0,
-                            time: 0,
-                            name: play["Song Name"],
-                            artist: play["Artist Name"],
-                            missedTime: 0
-                        };
-                    }
-
-                    yearSongs[yearID][uniqueID].plays = yearSongs[yearID][uniqueID].plays + 1;
-                    yearSongs[yearID][uniqueID].time = Number(yearSongs[yearID][uniqueID].time) + Number(play["Play Duration Milliseconds"]);
-                    yearSongs[yearID][uniqueID].missedTime = Number(yearSongs[yearID][uniqueID].missedTime) + missedMilliseconds;
-
-                }
+                } 
             }
 
-            // if (play["Item Type"] === "ORIGINAL_CONTENT_SHOWS") {
-
-            // }
+            if (play["Event Type"] === "LYRIC_DISPLAY") {
+                totals.totalLyrics = totals.totalLyrics + 1;
+            }
 
 
         }
@@ -221,6 +227,10 @@ class Computation {
         var result = Computation.convertObjectToArray(songs);
         result = result.sort(function (a, b) {
             return b.value.plays - a.value.plays;
+        });
+
+        var filteredSongs = result.filter(function (el) {
+            return !el.excluded
         });
 
         var yearresult = Computation.convertObjectToArray(yearSongs);
@@ -255,7 +265,9 @@ class Computation {
             reasons: reasonsResults,
             years: yearresult,
             artists: artistsResults,
-            totals: totals
+            totals: totals,
+            filteredSongs: filteredSongs,
+            excludedSongs: excludedSongs
         }
     }
 }

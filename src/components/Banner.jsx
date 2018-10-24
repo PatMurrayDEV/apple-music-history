@@ -71,7 +71,7 @@ class Banner extends Component {
                                     loading: true
                                 })
 
-                                var results = Computation.calculateTop(data);
+                                var results = Computation.calculateTop(data, []);
                                 this.props.dataResponseHandler({
                                     songs: results.songs,
                                     days: results.days,
@@ -80,7 +80,9 @@ class Banner extends Component {
                                     data: data,
                                     years: results.years,
                                     artists: results.artists,
-                                    totals: results.totals
+                                    totals: results.totals,
+                                    filteredSongs: results.filteredSongs,
+                                    excludedSongs: results.excludedSongs
                                 });
                             }}
                             render={onChange => <input type="file" onChange={onChange} />}

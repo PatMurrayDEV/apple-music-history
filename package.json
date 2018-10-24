@@ -20,6 +20,7 @@
     "react-intl-formatted-duration": "^2.0.2",
     "react-loader": "^2.4.5",
     "react-scripts": "2.0.5",
+    "react-slick": "^0.23.2",
     "react-table": "^6.8.6",
     "reactstrap": "^6.5.0"
   },

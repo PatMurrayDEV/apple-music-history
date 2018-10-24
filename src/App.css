@@ -44,3 +44,17 @@
 .box .lead {
     margin-bottom: 0;
 }
+
+.box .h1, .box .h2, .box .h3, .box .h4, .box .h5, .box .h6, .box h1, .box h2, .box h3, .box h4, .box h5, .box h6 {
+    margin-bottom: .0;
+}
+
+.title-flex{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1em;
+}
+
+.artists .year {
+    min-height: min-intrinsic;
+}
