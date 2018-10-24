@@ -6,7 +6,7 @@ import './App.css';
 import Banner from "./components/Banner"
 import Results from "./components/Results"
 
-
+import Footer from './components/footer'
 
 
 
@@ -35,8 +35,9 @@ class App extends Component {
     return (
       <div className="App">
         {appToLoad}
-
+        <Footer/>
       </div>
+      
     );
   }
 }

@@ -22,9 +22,9 @@
 }
 
 .linechart {
-    margin: 2em auto;
-    width: 620px;
-    height: 320px;
+    margin: 1em;
+    width: 650px;
+    height: 350px;
 }
 
 .reasons {
@@ -45,11 +45,22 @@
     margin-bottom: 0;
 }
 
-.box .h1, .box .h2, .box .h3, .box .h4, .box .h5, .box .h6, .box h1, .box h2, .box h3, .box h4, .box h5, .box h6 {
+.box .h1,
+.box .h2,
+.box .h3,
+.box .h4,
+.box .h5,
+.box .h6,
+.box h1,
+.box h2,
+.box h3,
+.box h4,
+.box h5,
+.box h6 {
     margin-bottom: .0;
 }
 
-.title-flex{
+.title-flex {
     display: flex;
     justify-content: space-between;
     margin-bottom: 1em;
@@ -57,4 +68,13 @@
 
 .artists .year {
     min-height: min-intrinsic;
+}
+
+body {
+    background-color: #e9ecef;
+}
+
+.footer {
+    opacity: 0.4;
+    margin: 2em;
 }
