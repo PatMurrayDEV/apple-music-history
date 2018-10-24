@@ -264,10 +264,11 @@ class Results extends Component {
         return (
             <div>
                 <Jumbotron>
-                    <h3>Your most played song on Apple Music is</h3>
-                    <h1 className="display-3"><p>{this.state.songs[0].key}</p></h1>
-                    <p className="lead">You've played this <strong>{this.state.songs[0].value.plays}</strong> times for a total of <strong>{Computation.convertTime(this.state.songs[0].value.time)}</strong>, skipping {Computation.convertTime(this.state.songs[0].value.missedTime)}</p>
-                    <hr className="my-2" />
+                    <div className="box">
+                        <h3>Your most played song on Apple Music is</h3>
+                        <h1 className="display-3"><p>{this.state.songs[0].key}</p></h1>
+                        <p className="lead">You've played this <strong>{this.state.songs[0].value.plays}</strong> times for a total of <strong>{Computation.convertTime(this.state.songs[0].value.time)}</strong>, skipping {Computation.convertTime(this.state.songs[0].value.missedTime)}</p>
+                    </div>
                     <div className="years">{yearsBoxes}</div>
                     <div className="years">
                         {totalsBox}
@@ -277,23 +278,23 @@ class Results extends Component {
                     <div className="years artists">
                         {artistBoxes}
                     </div>
-                
 
 
-                <div className="box linechart">
-                    {linechart}
-                </div>
 
-                <div className="box">
-                    <h1>Reasons A Song Finished Playing</h1>
-                    <div className="reasons">{reasonsBoxes}</div>
-                </div>
+                    <div className="box linechart">
+                        {linechart}
+                    </div>
 
-                <div className="box">
-                    <div className="title-flex"><h1>All Songs</h1> <Button outline color="secondary" size="sm" onClick={() => this.clearExcluded()} active={this.state.excludedSongs.length > 0}>Clear Excluded ({this.state.excludedSongs.length})</Button></div>
+                    <div className="box">
+                        <h1>Reasons A Song Finished Playing</h1>
+                        <div className="reasons">{reasonsBoxes}</div>
+                    </div>
 
-                    {table}
-                </div>
+                    <div className="box">
+                        <div className="title-flex"><h1>All Songs</h1> <Button outline color="secondary" size="sm" onClick={() => this.clearExcluded()} active={this.state.excludedSongs.length > 0}>Clear Excluded ({this.state.excludedSongs.length})</Button></div>
+
+                        {table}
+                    </div>
 
                 </Jumbotron>
 
