@@ -2,6 +2,7 @@ class Computation {
 
     static monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
+    
 
     static convetrData(input) {
         var data = {
@@ -45,6 +46,35 @@ class Computation {
 
     }
 
+    static convertTime(timeinmilli) {
+        var seconds     = parseInt(timeinmilli=timeinmilli/1000)%60;
+        var minutes     = parseInt(timeinmilli=timeinmilli/60)%60;
+        var hours       = parseInt(timeinmilli=timeinmilli/60)%24;
+        var days        =  parseInt(timeinmilli=timeinmilli/24);
+
+        var string = "";
+
+        if (days > 0) {
+            string = string + days + "d";
+        }
+
+        if (hours > 0) {
+            string = string + " " + hours + "h";
+        }
+
+        if (minutes > 0) {
+            string = string + " " + minutes + "m";
+        }
+
+        if (seconds > 0) {
+            string = string + " " + seconds + "s";
+        }
+
+        return string;
+
+    }
+
+
 
     static convertObjectToArray(array) {
         var result = [];
@@ -63,9 +93,14 @@ class Computation {
     static calculateTop(data) {
 
         var songs = {};
+        var artists ={};
         var yearSongs = {};
         var days = {};
-        var months = {}
+        var months = {};
+        var totals = {
+            totalPlays: 0,
+            totalTime: 0
+        };
         var reasons = {
             "SCRUB_END": 0,
             "MANUALLY_SELECTED_PLAYBACK_OF_A_DIFF_ITEM": 0,
@@ -85,10 +120,11 @@ class Computation {
         for (let index = 0; index < data.length; index++) {
             const play = data[index];
 
-            reasons[play["End Reason Type"]] = reasons[play["End Reason Type"]] + 1;
 
-            if (play["Song Name"].length > 0) {
+            if (play["Song Name"].length > 0 && Number(play["Media Duration In Milliseconds"]) > 0 && play["Item Type"] !== "ORIGINAL_CONTENT_SHOWS") {
                 const uniqueID = "'" + play["Song Name"] + "' by " + play["Artist Name"];
+                reasons[play["End Reason Type"]] = reasons[play["End Reason Type"]] + 1;
+
 
                 if (Number(play["Play Duration Milliseconds"]) > 8000 && (play["Event Type"] === "PLAY_END" || play["Event Type"] === "")) {
 
@@ -107,9 +143,23 @@ class Computation {
                     var missedMilliseconds = Number(play["Media Duration In Milliseconds"]) - Number(play["Play Duration Milliseconds"])
                     songs[uniqueID].missedTime = Number(songs[uniqueID].missedTime) + missedMilliseconds;
 
+                    totals.totalPlays = totals.totalPlays + 1;
+                    totals.totalTime = Number(totals.totalTime) + Number(play["Play Duration Milliseconds"]);
+
+                    if (artists[play["Artist Name"]] == null) {
+                        artists[play["Artist Name"]] = {
+                            plays: 0,
+                            time: 0,
+                            missedTime: 0
+                        };
+                    }
+                    artists[play["Artist Name"]].plays = artists[play["Artist Name"]].plays + 1;
+                    artists[play["Artist Name"]].time = Number(artists[play["Artist Name"]].time) + Number(play["Play Duration Milliseconds"]);
+                    artists[play["Artist Name"]].missedTime = Number(artists[play["Artist Name"]].missedTime) + missedMilliseconds;
+
 
                     var date = new Date(play["Event End Timestamp"]);
-                    var dayID = date.getFullYear() + "-" + date.getMonth() + 1 + "-" + date.getDate();
+                    var dayID = date.getDate() + " " + Computation.monthNames[date.getMonth()] + ", " + date.getFullYear();
 
                     if (days[dayID] == null) {
                         days[dayID] = {
@@ -160,6 +210,9 @@ class Computation {
                 }
             }
 
+            // if (play["Item Type"] === "ORIGINAL_CONTENT_SHOWS") {
+
+            // }
 
 
         }
@@ -180,15 +233,29 @@ class Computation {
         }
 
         var resultDays = Computation.convertObjectToArray(days);
-        var resultMonths = Computation.convertObjectToArray(months);
+        resultDays = resultDays.sort(function (a, b) {
+            return b.value.time - a.value.time;
+        });
 
+        var resultMonths = Computation.convertObjectToArray(months);
+        var artistsResults = Computation.convertObjectToArray(artists);
+        artistsResults = artistsResults.sort(function (a, b) {
+            return b.value.plays - a.value.plays;
+        });
+
+        var reasonsResults = Computation.convertObjectToArray(reasons);
+        reasonsResults = reasonsResults.sort(function (a, b) {
+            return b.value - a.value;
+        });
 
         return {
             songs: result,
             days: resultDays,
             months: resultMonths,
-            reasons: reasons,
-            years: yearresult
+            reasons: reasonsResults,
+            years: yearresult,
+            artists: artistsResults,
+            totals: totals
         }
     }
 }

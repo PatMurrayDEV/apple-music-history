@@ -1,6 +1,8 @@
 .box {
     box-shadow: 0 5px 25px rgba(0, 0, 0, .15);
     padding: 1em;
+    background-color: white;
+    margin: 1em;
 }
 
 .year {
@@ -22,4 +24,22 @@
     margin: 2em auto;
     width: 620px;
     height: 320px;
+}
+
+.reasons {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+.reason {
+    background-color: white;
+}
+
+.totals {
+    margin: 1em;
+}
+
+.box .lead {
+    margin-bottom: 0;
 }

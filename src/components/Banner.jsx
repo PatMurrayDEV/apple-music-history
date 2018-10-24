@@ -61,7 +61,7 @@ class Banner extends Component {
                     <h1 className="display-3">Apple Music Report</h1>
                     <p className="lead">Open your <em>Apple Music Play Activity.csv</em> file below to generate your report.</p>
                     <hr className="my-2" />
-                    <p>No data ever leaves your computer and all computation is done in the broswer. <a href="/how">Don't have your activity csv?</a></p>
+                    <p>No data ever leaves your computer and all computation is done in the browser. <a href="/how">Don't have your activity csv?</a></p>
                     <Alert color="info">
                         <CsvParse
                             keys={keys}
@@ -78,7 +78,9 @@ class Banner extends Component {
                                     months: results.months,
                                     reasons: results.reasons,
                                     data: data,
-                                    years: results.years
+                                    years: results.years,
+                                    artists: results.artists,
+                                    totals: results.totals
                                 });
                             }}
                             render={onChange => <input type="file" onChange={onChange} />}
