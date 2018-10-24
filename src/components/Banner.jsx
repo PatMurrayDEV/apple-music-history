@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Jumbotron, Alert } from 'reactstrap';
+import { Jumbotron, Button } from 'reactstrap';
 import Computation from "./Computation"
 import CsvParse from '@vtex/react-csv-parse';
 
@@ -58,12 +58,12 @@ class Banner extends Component {
         return (
             <div>
                 <Jumbotron>
-                    <h1 className="display-3">Apple Music Report</h1>
+                    <h1 className="display-3">Apple Music Analyser</h1>
                     <p className="lead">Open your <em>Apple Music Play Activity.csv</em> file below to generate your report.</p>
                     <hr className="my-2" />
-                    <p>No data ever leaves your computer and all computation is done in the browser. <a href="/how">Don't have your activity csv?</a></p>
-                    <Alert color="info">
+                    <p>No data ever leaves your computer and all computation is done in the browser. <a href="https://privacy.apple.com">Don't have your activity csv?</a></p>
                         <CsvParse
+                            
                             keys={keys}
                             onDataUploaded={data => {
 
@@ -85,10 +85,10 @@ class Banner extends Component {
                                     excludedSongs: results.excludedSongs
                                 });
                             }}
-                            render={onChange => <input type="file" onChange={onChange} />}
+                            render={onChange => <div><input id="file" name="file" className="inputfile" type="file" onChange={onChange} /><label htmlFor="file"><Button outline color="dark">Choose a file</Button> </label></div>}
                         />
+                        
                         <Loader loading={this.state.loading} />
-                    </Alert>
                 </Jumbotron>
                 <div className="box">
                 <a href="/image2.png"><img style={{ width: '300px' }} src={"/image2.png"} alt="" /></a>
