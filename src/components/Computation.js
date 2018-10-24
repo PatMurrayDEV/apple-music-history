@@ -229,9 +229,11 @@ class Computation {
             return b.value.plays - a.value.plays;
         });
 
-        var filteredSongs = result.filter(function (el) {
-            return !el.excluded
-        });
+        var filteredSongs = [] 
+        for (let index = 0; index < result.length; index++) {
+            if (!result[index].excluded) { filteredSongs.push(result[index]) }
+        }
+
 
         var yearresult = Computation.convertObjectToArray(yearSongs);
 
