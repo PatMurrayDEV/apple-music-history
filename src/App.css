@@ -7,6 +7,7 @@
 
 .year {
     width: 300px;
+    min-height: 300px;
     background-color: white;
     margin: 1em;
     flex-direction: column;

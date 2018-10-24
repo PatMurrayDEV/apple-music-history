@@ -240,7 +240,7 @@ class Computation {
         var resultMonths = Computation.convertObjectToArray(months);
         var artistsResults = Computation.convertObjectToArray(artists);
         artistsResults = artistsResults.sort(function (a, b) {
-            return b.value.plays - a.value.plays;
+            return b.value.time - a.value.time;
         });
 
         var reasonsResults = Computation.convertObjectToArray(reasons);

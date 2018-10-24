@@ -37,8 +37,7 @@ class Results extends Component {
 
         var totalsBox = <div className="box year" key="totals">
             <div>
-                <p className="lead">Since Joining Apple Music</p>
-                <p className="lead">You listened to</p>
+                <p className="lead">Total you've listened to</p>
                 <h2>{Computation.convertTime(this.state.totals.totalTime)}</h2>
                 <p className="lead">of music</p>
             </div>
@@ -53,9 +52,9 @@ class Results extends Component {
             <div>
                 <p className="lead">On</p>
                 <h3>{this.state.days[0].key}</h3>
-                <p className="lead">you listened to</p>
             </div>
             <div>
+                <p className="lead">you listened to</p>
                 <h3>{Computation.convertTime(this.state.days[0].value.time)}</h3>
                 <p className="lead">of music</p>
             </div>
@@ -67,11 +66,29 @@ class Results extends Component {
                 <p className="lead">songs</p>
             </div>
             <div>
-                <hr className="my-2" />
                 <h2>{numeral(this.state.artists.length).format('0,0')}</h2>
                 <p className="lead">artists</p>
             </div>
         </div>
+
+
+        var artistBoxes = [];
+        for (let index = 0; index < 4; index++) {
+            const artist = this.state.artists[index];
+            const div = <div className="box year" key={artist.key}>
+                <div>
+                    <h1>{artist.key}</h1>
+                </div>
+                <div>
+                    <hr className="my-2" />
+                    <p className="lead">{numeral(artist.value.plays).format('0,0')} Plays</p>
+                    <p>{Computation.convertTime(artist.value.time)}</p>
+                </div>
+            </div>
+            artistBoxes.push(div);
+        }
+
+
 
 
         var yearsBoxes = [];
@@ -79,14 +96,14 @@ class Results extends Component {
             const year = this.state.years[index];
             const div = <div className="box year" key={year.key}>
                 <div>
-                    <h1>{year.key}</h1>
-                    <h3>{year.value[0].value.name}</h3>
+                    <h4>{year.key}</h4>
+                    <h2>{year.value[0].value.name}</h2>
                     <h4>{year.value[0].value.artist}</h4>
                 </div>
                 <div>
                     <hr className="my-2" />
                     <p className="lead">{numeral(year.value[0].value.plays).format('0,0')} Plays</p>
-                    <p>{numeral(year.value[0].value.time / 1000).format('00:00:00')}</p>
+                    <p>{Computation.convertTime(year.value[0].value.time)}</p>
                 </div>
             </div>
             yearsBoxes.push(div);
@@ -193,11 +210,13 @@ class Results extends Component {
                     <p className="lead">You've played this {this.state.songs[0].value.plays} times for a total of {Computation.convertTime(this.state.songs[0].value.time)}, skipping {Computation.convertTime(this.state.songs[0].value.missedTime)}</p>
                     <hr className="my-2" />
                     <div className="years">{yearsBoxes}</div>
-                    <hr className="my-2" />
                     <div className="years">
                         {totalsBox}
                         {highestDay}
                         {totalSongs}
+                    </div>
+                    <div className="years">
+                        {artistBoxes}
                     </div>
                 </Jumbotron>
 
