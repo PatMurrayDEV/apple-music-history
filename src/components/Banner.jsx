@@ -34,16 +34,6 @@ const keys = [
     "Store Country Name",
 ];
 
-class Loader extends Component {
-    render() {
-        if (this.props.loading) {
-            return <span>Loading</span>
-        } else {
-            return <span></span>
-        }
-    }
-}
-
 class Banner extends Component {
 
     constructor(props) {
@@ -61,38 +51,48 @@ class Banner extends Component {
                     <h1 className="display-3">Apple Music Analyser</h1>
                     <p className="lead">Open your <em>Apple Music Play Activity.csv</em> file below to generate your report.</p>
                     <hr className="my-2" />
-                    <p>No data ever leaves your computer and all computation is done in the browser. <a href="https://privacy.apple.com">Don't have your activity csv?</a></p>
-                        <CsvParse
-                            
-                            keys={keys}
-                            onDataUploaded={data => {
+                    <p>No data ever leaves your computer and all computation is done in the browser.</p>
+                    <CsvParse
 
-                                this.setState({
-                                    loading: true
-                                })
+                        keys={keys}
+                        onDataUploaded={data => {
 
-                                var results = Computation.calculateTop(data, []);
-                                this.props.dataResponseHandler({
-                                    songs: results.songs,
-                                    days: results.days,
-                                    months: results.months,
-                                    reasons: results.reasons,
-                                    data: data,
-                                    years: results.years,
-                                    artists: results.artists,
-                                    totals: results.totals,
-                                    filteredSongs: results.filteredSongs,
-                                    excludedSongs: results.excludedSongs
-                                });
-                            }}
-                            render={onChange => <div><input id="file" name="file" className="inputfile" type="file" onChange={onChange} /><label htmlFor="file"><Button outline color="dark">Choose a file</Button> </label></div>}
-                        />
-                        
-                        <Loader loading={this.state.loading} />
+                            this.setState({
+                                loading: true
+                            })
+
+                            var results = Computation.calculateTop(data, []);
+                            this.props.dataResponseHandler({
+                                songs: results.songs,
+                                days: results.days,
+                                months: results.months,
+                                reasons: results.reasons,
+                                data: data,
+                                years: results.years,
+                                artists: results.artists,
+                                totals: results.totals,
+                                filteredSongs: results.filteredSongs,
+                                excludedSongs: results.excludedSongs
+                            });
+                        }}
+                        render={onChange => <div><input id="file" name="file" className="inputfile" type="file" onChange={onChange} /><label htmlFor="file"><Button outline color="dark">Choose a file</Button> </label></div>}
+                    />
+
                 </Jumbotron>
+
                 <div className="box">
-                <a href="/image2.png"><img style={{ width: '300px' }} src={"/image2.png"} alt="" /></a>
-                <a href="/image1.png"><img style={{ width: '300px' }} src={"/image1.png"} alt="" /></a>  
+                    <h3>Where is the file?</h3>
+
+                    <p>After downloading it from the privacy portal (<a href="https://privacy.apple.com">privacy.apple.com</a>). The file is at <pre>App Store, iTunes Store, iBooks Store and Apple Music/App_Store_iTunes_Store_iBooks_Store_Apple_Music/Apple Music Activity/Apple Music Play Activity.csv</pre></p>
+                    <a href="/step1.png"><img style={{ width: '300px' }} src={"/step1.png"} alt="" /></a>
+                    <a href="/step2.png"><img style={{ width: '300px' }} src={"/step2.png"} alt="" /></a>
+                    <a href="/step3.png"><img style={{ width: '300px' }} src={"/step3.png"} alt="" /></a>
+                </div>
+
+                <div className="box">
+                    <h3>Example Screenshots</h3>
+                    <a href="/image2.png"><img style={{ width: '300px' }} src={"/image2.png"} alt="" /></a>
+                    <a href="/image1.png"><img style={{ width: '300px' }} src={"/image1.png"} alt="" /></a>
                 </div>
 
 
