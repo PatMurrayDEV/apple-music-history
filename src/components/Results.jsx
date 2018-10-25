@@ -5,6 +5,10 @@ import numeral from 'numeral';
 import 'react-table/react-table.css';
 import ReactTable from "react-table";
 import matchSorter from 'match-sorter';
+import CalendarHeatmap from 'react-calendar-heatmap';
+import 'react-calendar-heatmap/dist/styles.css';
+import ReactTooltip from 'react-tooltip';
+
 
 var LineChart = require("react-chartjs").Line;
 // var BarChart = require("react-chartjs").Bar;
@@ -59,6 +63,7 @@ class Results extends Component {
             excludedSongs: results.excludedSongs
         });
     }
+
 
     render() {
 
@@ -139,7 +144,7 @@ class Results extends Component {
         }
 
 
-        
+
 
 
         var yearsBoxes = [];
@@ -257,6 +262,8 @@ class Results extends Component {
             }}
         />
 
+        console.log(this.state);
+
         var topSong = this.state.filteredSongs[0];
 
         var topSongBox = <div className="box" style={{ maxWidth: "calc(6em + 4 * 300px)" }}>
@@ -264,6 +271,25 @@ class Results extends Component {
             <h1 className="display-3"><p>{topSong.key}</p></h1>
             <p className="lead">You've played this <strong>{topSong.value.plays}</strong> times for a total of <strong>{Computation.convertTime(topSong.value.time)}</strong>, skipping {Computation.convertTime(topSong.value.missedTime)}</p>
         </div>;
+
+
+        var heatmapData = [];
+        var firstDay = new Date();
+        var maxValue = 0;
+        for (let index = 0; index < this.state.days.length; index++) {
+            const day = this.state.days[index];
+            heatmapData.push({
+                date: day.key,
+                count: day.value.time
+            })
+            if (day.value.time > maxValue) {
+                maxValue = day.value.time
+            }
+            if (new Date(day.key) < firstDay) {
+                firstDay = new Date(day.key)
+            }
+        }
+        console.log(heatmapData);
 
 
         return (
@@ -284,6 +310,38 @@ class Results extends Component {
 
                     <div className="box linechart">
                         {linechart}
+                    </div>
+
+                    <div className="box">
+                        <CalendarHeatmap
+                            startDate={firstDay}
+                            values={heatmapData}
+                            showWeekdayLabels={true}
+                            titleForValue={(value) => {
+                                if (value) {
+                                    return `${Computation.convertTime(value.count)} on ${value.date}`
+                                } else {
+                                    return ""
+                                }
+                                
+                            }}
+                            tooltipDataAttrs={(value) => {
+                                if (value) {
+                                    return { 'data-tip': `${Computation.convertTime(value.count)} on ${value.date}`}
+                                } else {
+                                    return {'data-tip': ''}
+                                }
+                                
+                            }}
+                            classForValue={(value) => {
+                                if (!value) {
+                                    return 'color-empty';
+                                }
+                                var number = Math.ceil((value.count / maxValue * 100) / 10) * 10
+                                return `color-scale-${number}`;
+                            }}
+                        />
+                        <ReactTooltip />
                     </div>
 
                     <div className="box">
