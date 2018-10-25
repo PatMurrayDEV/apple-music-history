@@ -8,7 +8,7 @@ import matchSorter from 'match-sorter';
 import CalendarHeatmap from 'react-calendar-heatmap';
 import 'react-calendar-heatmap/dist/styles.css';
 import ReactTooltip from 'react-tooltip';
-
+import HeatMap from 'react-heatmap-grid';
 
 var LineChart = require("react-chartjs").Line;
 // var BarChart = require("react-chartjs").Bar;
@@ -291,6 +291,10 @@ class Results extends Component {
         }
         console.log(heatmapData);
 
+        const xLabels = ['12am', '1am', '2am', '3am', '4am', '5am', '6am', '7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm', '7pm', '8pm', '9pm', '10pm', '11pm'];
+        const xLabelsVisibility = [true, false, false, true, false, false, true, false, false, true, false, false, true, false, false, true, false, false, true, false, false, true, false, false]
+        const yLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'];
+
 
         return (
             <div>
@@ -309,10 +313,15 @@ class Results extends Component {
 
 
                     <div className="box linechart">
+                        <h3>Playing Time by Month</h3>
                         {linechart}
+                        <p>
+                            Orange line: hours playing // Green line: hours 'skipped'
+                        </p>
                     </div>
 
                     <div className="box">
+                        <h3>Playing Time by Date</h3>
                         <CalendarHeatmap
                             startDate={firstDay}
                             values={heatmapData}
@@ -323,15 +332,15 @@ class Results extends Component {
                                 } else {
                                     return ""
                                 }
-                                
+
                             }}
                             tooltipDataAttrs={(value) => {
                                 if (value) {
-                                    return { 'data-tip': `${Computation.convertTime(value.count)} on ${value.date}`}
+                                    return { 'data-tip': `${Computation.convertTime(value.count)} on ${value.date}` }
                                 } else {
-                                    return {'data-tip': ''}
+                                    return { 'data-tip': '' }
                                 }
-                                
+
                             }}
                             classForValue={(value) => {
                                 if (!value) {
@@ -342,6 +351,19 @@ class Results extends Component {
                             }}
                         />
                         <ReactTooltip />
+                    </div>
+
+                    <div>
+                        <div className="box">
+                            <h3>Playing Time by Hour of Day</h3>
+                            <HeatMap
+                                squares={true}
+                                xLabelsVisibility={xLabelsVisibility}
+                                xLabels={xLabels}
+                                yLabels={yLabels}
+                                data={this.state.hoursArray}
+                            />
+                        </div>
                     </div>
 
                     <div className="box">
