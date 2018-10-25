@@ -91,3 +91,14 @@ body {
 	outline: 1px dotted #000;
 	outline: -webkit-focus-ring-color auto 5px;
 }
+.react-calendar-heatmap .color-scale-0 { fill: transparent; }
+.react-calendar-heatmap .color-scale-10 { fill: #00dbde; }
+.react-calendar-heatmap .color-scale-20 { fill: #1cc2e1; }
+.react-calendar-heatmap .color-scale-30 { fill: #38aae5; }
+.react-calendar-heatmap .color-scale-40 { fill: #5492e9; }
+.react-calendar-heatmap .color-scale-50 { fill: #7079ec; }
+.react-calendar-heatmap .color-scale-60 { fill: #8c61f0; }
+.react-calendar-heatmap .color-scale-70 { fill: #a849f4; }
+.react-calendar-heatmap .color-scale-80 { fill: #c430f7; }
+.react-calendar-heatmap .color-scale-90 { fill: #e018fb; }
+.react-calendar-heatmap .color-scale-100 { fill: #fc00ff; }

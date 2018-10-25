@@ -13,6 +13,7 @@
     "match-sorter": "^2.3.0",
     "numeral": "^2.0.6",
     "react": "^16.5.2",
+    "react-calendar-heatmap": "^1.7.0",
     "react-chartjs": "^1.2.0",
     "react-dom": "^16.5.2",
     "react-file-reader": "^1.1.4",
@@ -22,6 +23,7 @@
     "react-scripts": "2.0.5",
     "react-slick": "^0.23.2",
     "react-table": "^6.8.6",
+    "react-tooltip": "^3.9.0",
     "reactstrap": "^6.5.0"
   },
   "scripts": {

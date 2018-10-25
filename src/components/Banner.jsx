@@ -83,7 +83,8 @@ class Banner extends Component {
                 <div className="box">
                     <h3>Where is the file?</h3>
 
-                    <p>After downloading it from the privacy portal (<a href="https://privacy.apple.com">privacy.apple.com</a>). The file is at <pre>App Store, iTunes Store, iBooks Store and Apple Music/App_Store_iTunes_Store_iBooks_Store_Apple_Music/Apple Music Activity/Apple Music Play Activity.csv</pre></p>
+                    <p>After downloading it from the privacy portal (<a href="https://privacy.apple.com">privacy.apple.com</a>). The file is at:</p>
+                    <pre>App Store, iTunes Store, iBooks Store and Apple Music/App_Store_iTunes_Store_iBooks_Store_Apple_Music/Apple Music Activity/Apple Music Play Activity.csv</pre>
                     <a href="/step1.png"><img style={{ width: '300px' }} src={"/step1.png"} alt="" /></a>
                     <a href="/step2.png"><img style={{ width: '300px' }} src={"/step2.png"} alt="" /></a>
                     <a href="/step3.png"><img style={{ width: '300px' }} src={"/step3.png"} alt="" /></a>
