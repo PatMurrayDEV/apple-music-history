@@ -1,3 +1,6 @@
+import moment from 'moment';
+// import {timestamp} from 'moment-timezone';
+
 class Computation {
 
     static monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -89,7 +92,7 @@ class Computation {
         return result
     }
 
-    static calculateTop(data, excludedSongs) {
+    static calculateTop(data, excludedSongs, callback) {
 
         var songs = {};
         var artists = {};
@@ -101,6 +104,29 @@ class Computation {
             totalTime: 0,
             totalLyrics: 0
         };
+        var heatmapData = [
+            [
+                0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+            ],
+            [
+                0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+            ],
+            [
+                0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+            ],
+            [
+                0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+            ],
+            [
+                0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+            ],
+            [
+                0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+            ],
+            [
+                0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+            ]
+        ];
         var reasons = {
             "SCRUB_END": 0,
             "MANUALLY_SELECTED_PLAYBACK_OF_A_DIFF_ITEM": 0,
@@ -174,8 +200,15 @@ class Computation {
                         days[dayID].plays = days[dayID].plays + 1;
                         days[dayID].time = Number(days[dayID].time) + Number(play["Play Duration Milliseconds"]);
 
+                        var offset = Number(play["UTC Offset In Seconds"])/60;
+                        var day = moment(date).utcOffset(offset);
+                        var dayint = day.weekday();
+                        var hoursint = day.hours();
+                        heatmapData[dayint][hoursint] = Number(heatmapData[dayint][hoursint]) + Number(play["Play Duration Milliseconds"]);
 
-                        var monthID = date.getFullYear() + "-" + Computation.monthNames[date.getMonth()]
+
+
+                        var monthID = date.getFullYear() + "-" + Computation.monthNames[date.getMonth()];
 
                         if (months[monthID] == null) {
                             months[monthID] = {
@@ -264,7 +297,7 @@ class Computation {
             return b.value - a.value;
         });
 
-        return {
+        callback({
             songs: result,
             days: resultDays,
             months: resultMonths,
@@ -273,8 +306,11 @@ class Computation {
             artists: artistsResults,
             totals: totals,
             filteredSongs: filteredSongs,
-            excludedSongs: excludedSongs
-        }
+            excludedSongs: excludedSongs,
+            hoursArray: heatmapData
+        })
+
+        // return 
     }
 }
 

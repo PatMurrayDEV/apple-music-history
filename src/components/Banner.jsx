@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Jumbotron, Button } from 'reactstrap';
+import { Jumbotron } from 'reactstrap';
 import Computation from "./Computation"
 import CsvParse from '@vtex/react-csv-parse';
 
@@ -61,23 +61,26 @@ class Banner extends Component {
                                 loading: true
                             })
 
-                            var results = Computation.calculateTop(data, []);
-                            this.props.dataResponseHandler({
-                                songs: results.songs,
-                                days: results.days,
-                                months: results.months,
-                                reasons: results.reasons,
-                                data: data,
-                                years: results.years,
-                                artists: results.artists,
-                                totals: results.totals,
-                                filteredSongs: results.filteredSongs,
-                                excludedSongs: results.excludedSongs
+                            Computation.calculateTop(data, [], results => {
+                                this.props.dataResponseHandler({
+                                    songs: results.songs,
+                                    days: results.days,
+                                    months: results.months,
+                                    reasons: results.reasons,
+                                    data: data,
+                                    years: results.years,
+                                    artists: results.artists,
+                                    totals: results.totals,
+                                    filteredSongs: results.filteredSongs,
+                                    excludedSongs: results.excludedSongs,
+                                    hoursArray: results.hoursArray
+                                });
                             });
+                            
                         }}
-                        render={onChange => <div><input id="file" name="file" className="inputfile" type="file" onChange={onChange} /><label htmlFor="file"><Button outline color="dark">Choose a file</Button> </label></div>}
+                        render={onChange => <div><input id="file" name="file" className="inputfile" type="file" onChange={onChange} /><p>Loading may take a moment... be patient</p></div>}
                     />
-
+                    
                 </Jumbotron>
 
                 <div className="box">

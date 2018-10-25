@@ -14,7 +14,7 @@ class App extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { songs: [], days: [], data: [], months: [], reasons: {}, years: [], totals: {}, artists: [], filteredSongs: [], excludedSongs: [] };
+    this.state = { songs: [], days: [], data: [], months: [], reasons: {}, years: [], totals: {}, artists: [], filteredSongs: [], excludedSongs: [], hoursArray:[] };
   }
 
 
