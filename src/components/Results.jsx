@@ -10,6 +10,8 @@ import 'react-calendar-heatmap/dist/styles.css';
 import ReactTooltip from 'react-tooltip';
 import HeatMap from 'react-heatmap-grid';
 
+import YearCollapse from './yearcollapse'
+
 var LineChart = require("react-chartjs").Line;
 // var BarChart = require("react-chartjs").Bar;
 
@@ -31,20 +33,22 @@ class Results extends Component {
             excludedSongs.push(key);
         }
 
-        var results = Computation.calculateTop(this.state.data, excludedSongs);
-
-        this.setState({
-            songs: results.songs,
-            days: results.days,
-            months: results.months,
-            reasons: results.reasons,
-            data: this.state.data,
-            years: results.years,
-            artists: results.artists,
-            totals: results.totals,
-            filteredSongs: results.filteredSongs,
-            excludedSongs: results.excludedSongs
+        Computation.calculateTop(this.state.data, excludedSongs, results => {
+            this.setState({
+                songs: results.songs,
+                days: results.days,
+                months: results.months,
+                reasons: results.reasons,
+                data: this.state.data,
+                years: results.years,
+                artists: results.artists,
+                totals: results.totals,
+                filteredSongs: results.filteredSongs,
+                excludedSongs: results.excludedSongs
+            });
         });
+
+        
 
     }
 
@@ -112,14 +116,14 @@ class Results extends Component {
             <div>
                 <h2>{numeral(this.state.songs.length).format('0,0')}</h2>
                 <p className="lead">songs</p>
-                <hr className="my-2" />
             </div>
             <div>
+                <hr className="my-2" />
                 <h2>{numeral(this.state.artists.length).format('0,0')}</h2>
                 <p className="lead">artists</p>
-                <hr className="my-2" />
             </div>
             <div>
+                <hr className="my-2" />
                 <h2>{numeral(this.state.totals.totalLyrics).format('0,0')}</h2>
                 <p className="lead">times viewed lyrics</p>
             </div>
@@ -148,6 +152,7 @@ class Results extends Component {
 
 
         var yearsBoxes = [];
+        var yearsBoxes2 = [];
         for (let index = 0; index < this.state.years.length; index++) {
             const year = this.state.years[index];
             const div = <div className="box year" key={year.key}>
@@ -163,7 +168,11 @@ class Results extends Component {
                 </div>
             </div>
             yearsBoxes.push(div);
+            yearsBoxes2.push(<YearCollapse year={year} key={year.key + "-full"}/>);
         }
+
+
+        
 
         var linechart = <LineChart data={Computation.convetrData(this.state.months)} width="600" height="300" options={{ bezierCurve: true, bezierCurveTension: 0.8, pointDot: false }} />
 
@@ -172,11 +181,11 @@ class Results extends Component {
         for (let index = 0; index < this.state.reasons.length; index++) {
             const element = this.state.reasons[index];
             if (element.key !== "" && element.key !== "QUICK_PLAY" && element.key !== "NOT_APPLICABLE") {
-                var box = <div className="box reason" key={element.key}>
+                var box2 = <div className="box reason" key={element.key}>
                     <h3>{reasons[element.key]}</h3>
                     <p className="lead">{numeral(element.value).format('0,0')} Times</p>
                 </div>
-                reasonsBoxes.push(box);
+                reasonsBoxes.push(box2);
             }
         }
 
@@ -365,6 +374,8 @@ class Results extends Component {
                             />
                         </div>
                     </div>
+
+                    {yearsBoxes2}
 
                     <div className="box">
                         <h1>Reasons A Song Finished Playing</h1>
