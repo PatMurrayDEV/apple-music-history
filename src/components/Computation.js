@@ -92,6 +92,42 @@ class Computation {
         return result
     }
 
+    static isSamePlay(play, previousPlay) {
+        if (previousPlay != null &&
+            Computation.isPlay(previousPlay) && 
+            Computation.isPlay(play) &&
+            previousPlay["Song Name"] === play["Song Name"] &&
+            previousPlay["Artist Name"] === play["Artist Name"] &&
+            previousPlay["End Position In Milliseconds"] === play["Start Position In Milliseconds"] &&
+            previousPlay["End Reason Type"] === "PLAYBACK_MANUALLY_PAUSED") {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    static isSamePlayNext(play, nextPlay) {
+        if (nextPlay != null &&
+            Computation.isPlay(nextPlay) && 
+            Computation.isPlay(play) &&
+            nextPlay["Song Name"] === play["Song Name"] &&
+            nextPlay["Artist Name"] === play["Artist Name"] &&
+            play["End Position In Milliseconds"] === nextPlay["Start Position In Milliseconds"] &&
+            play["End Reason Type"] === "PLAYBACK_MANUALLY_PAUSED") {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    static isPlay(play) {
+        if (play["Song Name"].length > 0 && Number(play["Media Duration In Milliseconds"]) > 0 && play["Item Type"] !== "ORIGINAL_CONTENT_SHOWS" && play["Media Type"] !== "VIDEO") {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     static calculateTop(data, excludedSongs, callback) {
 
         var songs = {};
@@ -106,25 +142,25 @@ class Computation {
         };
         var heatmapData = [
             [
-                0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
             ],
             [
-                0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
             ],
             [
-                0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
             ],
             [
-                0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
             ],
             [
-                0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
             ],
             [
-                0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
             ],
             [
-                0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
             ]
         ];
         var reasons = {
@@ -143,11 +179,12 @@ class Computation {
             "": 0
         }
 
+        var previousPlay;
+
         for (let index = 0; index < data.length; index++) {
             const play = data[index];
 
-
-            if (play["Song Name"].length > 0 && Number(play["Media Duration In Milliseconds"]) > 0 && play["Item Type"] !== "ORIGINAL_CONTENT_SHOWS" && play["Media Type"] !== "VIDEO") {
+            if (Computation.isPlay(play)) {
                 const uniqueID = "'" + play["Song Name"] + "' by " + play["Artist Name"];
                 reasons[play["End Reason Type"]] = reasons[play["End Reason Type"]] + 1;
 
@@ -165,15 +202,22 @@ class Computation {
                         };
                     }
 
-                    songs[uniqueID].plays = songs[uniqueID].plays + 1;
-                    songs[uniqueID].time = Number(songs[uniqueID].time) + Number(play["Play Duration Milliseconds"]);
+
                     var missedMilliseconds = Number(play["Media Duration In Milliseconds"]) - Number(play["Play Duration Milliseconds"])
+
+                    if (Computation.isSamePlayNext(play, data[index+1])) {
+                        missedMilliseconds = 0;
+                    }
+
+                    if (!Computation.isSamePlay(play, previousPlay)) {
+                        songs[uniqueID].plays = songs[uniqueID].plays + 1;
+                    }
+
+                    songs[uniqueID].time = Number(songs[uniqueID].time) + Number(play["Play Duration Milliseconds"]);
                     songs[uniqueID].missedTime = Number(songs[uniqueID].missedTime) + missedMilliseconds;
 
-                    if (!songs[uniqueID].excluded) {
 
-                        totals.totalPlays = totals.totalPlays + 1;
-                        totals.totalTime = Number(totals.totalTime) + Number(play["Play Duration Milliseconds"]);
+                    if (!songs[uniqueID].excluded) {
 
                         if (artists[play["Artist Name"]] == null) {
                             artists[play["Artist Name"]] = {
@@ -182,7 +226,14 @@ class Computation {
                                 missedTime: 0
                             };
                         }
-                        artists[play["Artist Name"]].plays = artists[play["Artist Name"]].plays + 1;
+
+                        if (!Computation.isSamePlay(play, previousPlay)) {
+                            totals.totalPlays = totals.totalPlays + 1;
+                            artists[play["Artist Name"]].plays = artists[play["Artist Name"]].plays + 1;
+                        }
+
+
+                        totals.totalTime = Number(totals.totalTime) + Number(play["Play Duration Milliseconds"]);
                         artists[play["Artist Name"]].time = Number(artists[play["Artist Name"]].time) + Number(play["Play Duration Milliseconds"]);
                         artists[play["Artist Name"]].missedTime = Number(artists[play["Artist Name"]].missedTime) + missedMilliseconds;
 
@@ -197,10 +248,12 @@ class Computation {
                             };
                         }
 
-                        days[dayID].plays = days[dayID].plays + 1;
+                        if (!Computation.isSamePlay(play, previousPlay)) {
+                            days[dayID].plays = days[dayID].plays + 1;
+                        }
                         days[dayID].time = Number(days[dayID].time) + Number(play["Play Duration Milliseconds"]);
 
-                        var offset = Number(play["UTC Offset In Seconds"])/60;
+                        var offset = Number(play["UTC Offset In Seconds"]) / 60;
                         var day = moment(date).utcOffset(offset);
                         var dayint = day.weekday();
                         var hoursint = day.hours();
@@ -218,7 +271,9 @@ class Computation {
                             };
                         }
 
-                        months[monthID].plays = months[monthID].plays + 1;
+                        if (!Computation.isSamePlay(play, previousPlay)) {
+                            months[monthID].plays = months[monthID].plays + 1;
+                        }
                         months[monthID].time = Number(months[monthID].time) + Number(play["Play Duration Milliseconds"]);
                         months[monthID].missedTime = Number(months[monthID].missedTime) + missedMilliseconds;
 
@@ -238,7 +293,9 @@ class Computation {
                             };
                         }
 
-                        yearSongs[yearID][uniqueID].plays = yearSongs[yearID][uniqueID].plays + 1;
+                        if (!Computation.isSamePlay(play, previousPlay)) {
+                            yearSongs[yearID][uniqueID].plays = yearSongs[yearID][uniqueID].plays + 1;
+                        }
                         yearSongs[yearID][uniqueID].time = Number(yearSongs[yearID][uniqueID].time) + Number(play["Play Duration Milliseconds"]);
                         yearSongs[yearID][uniqueID].missedTime = Number(yearSongs[yearID][uniqueID].missedTime) + missedMilliseconds;
 
@@ -246,12 +303,14 @@ class Computation {
                     }
 
 
-                } 
+                }
             }
 
             if (play["Event Type"] === "LYRIC_DISPLAY") {
                 totals.totalLyrics = totals.totalLyrics + 1;
             }
+
+            previousPlay = play;
 
 
         }
@@ -262,9 +321,9 @@ class Computation {
             return b.value.plays - a.value.plays;
         });
 
-        var filteredSongs = [] 
+        var filteredSongs = []
         for (let index = 0; index < result.length; index++) {
-            if (!result[index].value.excluded) { 
+            if (!result[index].value.excluded) {
                 filteredSongs.push(result[index]);
             } else {
                 console.log(result[index]);
