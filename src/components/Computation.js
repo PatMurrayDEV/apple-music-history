@@ -318,7 +318,7 @@ class Computation {
 
         var result = Computation.convertObjectToArray(songs);
         result = result.sort(function (a, b) {
-            return b.value.plays - a.value.plays;
+            return b.value.time - a.value.time;
         });
 
         var filteredSongs = []
@@ -336,7 +336,7 @@ class Computation {
         for (let index = 0; index < yearresult.length; index++) {
             yearresult[index].value = Computation.convertObjectToArray(yearresult[index].value);
             yearresult[index].value = yearresult[index].value.sort(function (a, b) {
-                return b.value.plays - a.value.plays;
+                return b.value.time - a.value.time;
             });
         }
 
