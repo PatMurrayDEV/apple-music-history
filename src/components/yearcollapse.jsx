@@ -15,12 +15,15 @@ class YearCollapse extends Component {
         this.toggle = this.toggle.bind(this);
     }
 
+    componentWillReceiveProps(nextProps) {
+        this.setState({ year: nextProps.year, collapse: this.state.collapse });
+    }
+
     toggle() {
-        console.log(this.state);
-        this.setState({ 
+        this.setState({
             collapse: !this.state.collapse,
             year: this.state.year
-         });
+        });
     }
 
     render() {

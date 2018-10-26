@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Jumbotron } from 'reactstrap';
-import Computation from "./Computation"
 import CsvParse from '@vtex/react-csv-parse';
 
 const keys = [
@@ -57,25 +56,7 @@ class Banner extends Component {
                         keys={keys}
                         onDataUploaded={data => {
 
-                            this.setState({
-                                loading: true
-                            })
-
-                            Computation.calculateTop(data, [], results => {
-                                this.props.dataResponseHandler({
-                                    songs: results.songs,
-                                    days: results.days,
-                                    months: results.months,
-                                    reasons: results.reasons,
-                                    data: data,
-                                    years: results.years,
-                                    artists: results.artists,
-                                    totals: results.totals,
-                                    filteredSongs: results.filteredSongs,
-                                    excludedSongs: results.excludedSongs,
-                                    hoursArray: results.hoursArray
-                                });
-                            });
+                            this.props.dataResponseHandler(data);
                             
                         }}
                         render={onChange => <div><input id="file" name="file" className="inputfile" type="file" onChange={onChange} /><p>Loading may take a moment... be patient</p></div>}
