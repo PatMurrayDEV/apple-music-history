@@ -118,6 +118,7 @@ class Results extends Component {
             artistBoxes.push(div);
         }
 
+        
 
 
         
@@ -136,6 +137,7 @@ class Results extends Component {
         var heatmapData = [];
         var firstDay = new Date();
         var maxValue = 0;
+        var lastDate = new Date('2015-01-01T01:00:00');
         for (let index = 0; index < this.state.days.length; index++) {
             const day = this.state.days[index];
             heatmapData.push({
@@ -148,8 +150,13 @@ class Results extends Component {
             if (new Date(day.key) < firstDay) {
                 firstDay = new Date(day.key)
             }
+            if (new Date(day.key) > lastDate) {
+                lastDate = new Date(day.key)
+            }
         }
         console.log(heatmapData);
+
+        var dayswithoutmusic = Math.round((lastDate-firstDay)/(1000*60*60*24)) - this.state.days.length;
 
         const xLabels = ['12am', '1am', '2am', '3am', '4am', '5am', '6am', '7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm', '7pm', '8pm', '9pm', '10pm', '11pm'];
         const xLabelsVisibility = [true, false, false, true, false, false, true, false, false, true, false, false, true, false, false, true, false, false, true, false, false, true, false, false]
@@ -172,6 +179,7 @@ class Results extends Component {
                         <h3>Playing Time by Date</h3>
                         <CalendarHeatmap
                             startDate={firstDay}
+                            endDate={lastDate}
                             values={heatmapData}
                             showWeekdayLabels={true}
                             titleForValue={(value) => {
@@ -199,6 +207,7 @@ class Results extends Component {
                             }}
                         />
                         <ReactTooltip />
+                        <p>There were <strong>{numeral(dayswithoutmusic).format('0,0')}</strong> days you didn't listen to music.</p>
                     </div>
 
                     <div>
