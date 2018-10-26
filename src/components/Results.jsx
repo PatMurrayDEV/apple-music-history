@@ -123,7 +123,7 @@ class Results extends Component {
 
         
 
-        console.log(this.state);
+        
 
         var topSong = this.state.filteredSongs[0];
 
@@ -154,9 +154,10 @@ class Results extends Component {
                 lastDate = new Date(day.key)
             }
         }
-        console.log(heatmapData);
+        
 
-        var dayswithoutmusic = Math.round((lastDate-firstDay)/(1000*60*60*24)) - this.state.days.length;
+        var daysTodayCount = Math.round((lastDate-firstDay)/(1000*60*60*24))
+        var dayswithoutmusic = daysTodayCount - this.state.days.length;
 
         const xLabels = ['12am', '1am', '2am', '3am', '4am', '5am', '6am', '7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm', '7pm', '8pm', '9pm', '10pm', '11pm'];
         const xLabelsVisibility = [true, false, false, true, false, false, true, false, false, true, false, false, true, false, false, true, false, false, true, false, false, true, false, false]
@@ -183,7 +184,7 @@ class Results extends Component {
                             values={heatmapData}
                             showWeekdayLabels={true}
                             titleForValue={(value) => {
-                                if (value) {
+                                if (value && value.date != null) {
                                     return `${Computation.convertTime(value.count)} on ${value.date}`
                                 } else {
                                     return ""
@@ -191,7 +192,7 @@ class Results extends Component {
 
                             }}
                             tooltipDataAttrs={(value) => {
-                                if (value) {
+                                if (value && value.date != null) {
                                     return { 'data-tip': `${Computation.convertTime(value.count)} on ${value.date}` }
                                 } else {
                                     return { 'data-tip': '' }
@@ -207,7 +208,7 @@ class Results extends Component {
                             }}
                         />
                         <ReactTooltip />
-                        <p>There were <strong>{numeral(dayswithoutmusic).format('0,0')}</strong> days you didn't listen to music.</p>
+                        <p>There were <strong>{numeral(dayswithoutmusic).format('0,0')}</strong> out of <strong>{numeral(daysTodayCount).format('0,0')}</strong> days you didn't listen to music.</p>
                     </div>
 
                     <div>
