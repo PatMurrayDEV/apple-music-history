@@ -14,7 +14,7 @@ class App extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { songs: [], days: [], data: [], months: [], reasons: {}, years: [], totals: {}, artists: [], filteredSongs: [], excludedSongs: [], hoursArray:[] };
+    this.state = { data: [] };
   }
 
 
@@ -26,10 +26,14 @@ class App extends Component {
 
     var appToLoad;
 
-    if (this.state.songs.length > 0) {
-      appToLoad = <Results data={this.state} />;
+    if (this.state.data.length > 0) {
+      appToLoad = <Results data={this.state.data} />;
     } else {
-      appToLoad = <Banner dataResponseHandler={data => this.setState(data)} />;
+      appToLoad = <Banner dataResponseHandler={data => {
+        this.setState({
+          data: data
+        })        
+      }} />;
     }
 
     return (
