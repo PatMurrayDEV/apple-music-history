@@ -78,6 +78,7 @@ class Banner extends Component {
                     <h3>Example Screenshots</h3>
                     <a href="/image2.png"><img style={{ width: '300px' }} src={"/image2.png"} alt="" /></a>
                     <a href="/image1.png"><img style={{ width: '300px' }} src={"/image1.png"} alt="" /></a>
+                    <a href="/image3.png"><img style={{ width: '300px' }} src={"/image3.png"} alt="" /></a>
                 </div>
 
 
