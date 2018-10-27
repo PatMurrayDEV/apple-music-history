@@ -178,6 +178,21 @@ class Computation {
             "": 0
         }
 
+
+        // callback({
+        //     songs: [],
+        //     days: [],
+        //     months: [],
+        //     reasons: [],
+        //     years: [],
+        //     artists: [],
+        //     totals: totals,
+        //     filteredSongs: [],
+        //     excludedSongs: [],
+        //     hoursArray: heatmapData
+        // })
+
+
         var previousPlay;
 
         for (let index = 0; index < data.length; index++) {
