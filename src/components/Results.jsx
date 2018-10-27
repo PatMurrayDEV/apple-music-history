@@ -26,22 +26,23 @@ class Results extends Component {
     }
 
     componentDidMount() {
-
-        Computation.calculateTop(this.state.data, this.state.excludedSongs, results => {
-            this.setState({
-                songs: results.songs,
-                days: results.days,
-                months: results.months,
-                reasons: results.reasons,
-                data: this.state.data,
-                years: results.years,
-                artists: results.artists,
-                totals: results.totals,
-                filteredSongs: results.filteredSongs,
-                excludedSongs: results.excludedSongs,
-                hoursArray: results.hoursArray
+        setTimeout(() => {
+            Computation.calculateTop(this.state.data, this.state.excludedSongs, results => {
+                this.setState({
+                    songs: results.songs,
+                    days: results.days,
+                    months: results.months,
+                    reasons: results.reasons,
+                    data: this.state.data,
+                    years: results.years,
+                    artists: results.artists,
+                    totals: results.totals,
+                    filteredSongs: results.filteredSongs,
+                    excludedSongs: results.excludedSongs,
+                    hoursArray: results.hoursArray
+                });
             });
-        });
+        }, 0);
     }
 
     addExcluded(row) {
@@ -55,49 +56,69 @@ class Results extends Component {
             excludedSongs.push(key);
         }
 
-        Computation.calculateTop(this.state.data, excludedSongs, results => {
-            this.setState({
-                songs: results.songs,
-                days: results.days,
-                months: results.months,
-                reasons: results.reasons,
-                data: this.state.data,
-                years: results.years,
-                artists: results.artists,
-                totals: results.totals,
-                filteredSongs: results.filteredSongs,
-                excludedSongs: results.excludedSongs,
-                hoursArray: results.hoursArray
+        setTimeout(() => {
+            Computation.calculateTop(this.state.data, excludedSongs, results => {
+                
+                this.setState({
+                    songs: results.songs,
+                    days: results.days,
+                    months: results.months,
+                    reasons: results.reasons,
+                    data: this.state.data,
+                    years: results.years,
+                    artists: results.artists,
+                    totals: results.totals,
+                    filteredSongs: results.filteredSongs,
+                    excludedSongs: results.excludedSongs,
+                    hoursArray: results.hoursArray
+                });
+                
             });
-        });
+        }, 0);
 
 
 
     }
 
     clearExcluded() {
-        Computation.calculateTop(this.state.data, [], results => {
-            this.setState({
-                songs: results.songs,
-                days: results.days,
-                months: results.months,
-                reasons: results.reasons,
-                data: this.state.data,
-                years: results.years,
-                artists: results.artists,
-                totals: results.totals,
-                filteredSongs: results.filteredSongs,
-                excludedSongs: results.excludedSongs,
-                hoursArray: results.hoursArray
+        setTimeout(() => {
+            Computation.calculateTop(this.state.data, [], results => {
+                this.setState({
+                    songs: results.songs,
+                    days: results.days,
+                    months: results.months,
+                    reasons: results.reasons,
+                    data: this.state.data,
+                    years: results.years,
+                    artists: results.artists,
+                    totals: results.totals,
+                    filteredSongs: results.filteredSongs,
+                    excludedSongs: results.excludedSongs,
+                    hoursArray: results.hoursArray
+                });
             });
-        });
+        }, 0);
     }
 
 
     render() {
 
         if (this.state.songs == null) {
-            return(<div><h1>Loading...</h1></div>);
+            return (<div><h4  style={{textAlign: 'center'}}>Loading...</h4><div className="sk-fading-circle">
+            <div className="sk-circle1 sk-circle"></div>
+            <div className="sk-circle2 sk-circle"></div>
+            <div className="sk-circle3 sk-circle"></div>
+            <div className="sk-circle4 sk-circle"></div>
+            <div className="sk-circle5 sk-circle"></div>
+            <div className="sk-circle6 sk-circle"></div>
+            <div className="sk-circle7 sk-circle"></div>
+            <div className="sk-circle8 sk-circle"></div>
+            <div className="sk-circle9 sk-circle"></div>
+            <div className="sk-circle10 sk-circle"></div>
+            <div className="sk-circle11 sk-circle"></div>
+            <div className="sk-circle12 sk-circle"></div>
+          </div>
+          </div>);
         }
 
 
@@ -118,12 +139,12 @@ class Results extends Component {
             artistBoxes.push(div);
         }
 
-        
 
 
-        
 
-        
+
+
+
 
         var topSong = this.state.filteredSongs[0];
 
@@ -154,9 +175,9 @@ class Results extends Component {
                 lastDate = new Date(day.key)
             }
         }
-        
 
-        var daysTodayCount = Math.round((lastDate-firstDay)/(1000*60*60*24))
+
+        var daysTodayCount = Math.round((lastDate - firstDay) / (1000 * 60 * 60 * 24))
         var dayswithoutmusic = daysTodayCount - this.state.days.length;
 
         const xLabels = ['12am', '1am', '2am', '3am', '4am', '5am', '6am', '7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm', '7pm', '8pm', '9pm', '10pm', '11pm'];
@@ -168,8 +189,8 @@ class Results extends Component {
             <div>
                 <Jumbotron>
                     {topSongBox}
-                    <TopYears years={this.state.years}/>
-                    <TotalsBoxes totals={this.state.totals} songs={this.state.songs.length} artists={this.state.artists.length} day={this.state.days[0]}/>
+                    <TopYears years={this.state.years} />
+                    <TotalsBoxes totals={this.state.totals} songs={this.state.songs.length} artists={this.state.artists.length} day={this.state.days[0]} />
                     <div className="years artists">
                         {artistBoxes}
                     </div>
@@ -230,7 +251,7 @@ class Results extends Component {
 
                     <div className="box">
                         <div className="title-flex"><h1>All Songs</h1> <Button outline color="secondary" size="sm" onClick={() => this.clearExcluded()} active={this.state.excludedSongs.length > 0}>Clear Excluded ({this.state.excludedSongs.length})</Button></div>
-                        <AllSongsTable addExcluded={ row => this.addExcluded(row) } songs={this.state.songs}/>
+                        <AllSongsTable addExcluded={row => this.addExcluded(row)} songs={this.state.songs} />
                     </div>
 
                 </Jumbotron>
