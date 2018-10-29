@@ -120,7 +120,7 @@ class Computation {
     }
 
     static isPlay(play) {
-        if (play["Song Name"].length > 0 && Number(play["Media Duration In Milliseconds"]) > 0 && play["Item Type"] !== "ORIGINAL_CONTENT_SHOWS" && play["Media Type"] !== "VIDEO") {
+        if (play["Song Name"].length > 0 && Number(play["Media Duration In Milliseconds"]) > 0 && play["Item Type"] !== "ORIGINAL_CONTENT_SHOWS" && play["Media Type"] !== "VIDEO" && play["End Reason Type"] !== "FAILED_TO_LOAD") {
             return true;
         } else {
             return false;
@@ -197,10 +197,11 @@ class Computation {
 
         for (let index = 0; index < data.length; index++) {
             const play = data[index];
+            reasons[play["End Reason Type"]] = reasons[play["End Reason Type"]] + 1;
 
             if (Computation.isPlay(play)) {
                 const uniqueID = "'" + play["Song Name"] + "' by " + play["Artist Name"];
-                reasons[play["End Reason Type"]] = reasons[play["End Reason Type"]] + 1;
+                
 
 
                 if (Number(play["Play Duration Milliseconds"]) > 8000 && (play["Event Type"] === "PLAY_END" || play["Event Type"] === "")) {
