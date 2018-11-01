@@ -32,6 +32,10 @@ class YearCollapse extends Component {
         for (let index = 0; index < 20; index++) {
             const element = this.state.year.value[index];
 
+            if (typeof element == 'undefined') {
+                continue;
+            }
+            
             var box = <div className="box reason" key={element.key}>
                 <h3>{element.value.name}</h3>
                 <h5>{element.value.artist}</h5>
