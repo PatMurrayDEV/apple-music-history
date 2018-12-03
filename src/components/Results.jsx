@@ -15,6 +15,8 @@ import YearsTopSongs from './YearsTopSongs';
 import TotalsBoxes from './TotalsBoxes';
 import AllSongsTable from './AllSongsTable';
 
+import TopSongBox from './TopSongBox';
+
 class Results extends Component {
 
     constructor(props) {
@@ -148,11 +150,8 @@ class Results extends Component {
 
         var topSong = this.state.filteredSongs[0];
 
-        var topSongBox = <div className="box" style={{ maxWidth: "calc(6em + 4 * 300px)" }}>
-            <h3>Your most played song on Apple Music is</h3>
-            <h1 className="display-3"><p>{topSong.key}</p></h1>
-            <p className="lead">You've played this <strong>{topSong.value.plays}</strong> times for a total of <strong>{Computation.convertTime(topSong.value.time)}</strong>, skipping {Computation.convertTime(topSong.value.missedTime)}</p>
-        </div>;
+
+        var topSongBox = <TopSongBox song={topSong} />;
 
 
         var heatmapData = [];
