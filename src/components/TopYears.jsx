@@ -86,6 +86,7 @@ class TopYears extends Component {
             const year = this.state.years[index];
             const div = <YearBox year={year} key={year.key} />
             yearsBoxes.push(div);
+
         }
 
         return (<div className="years">{yearsBoxes}</div>);

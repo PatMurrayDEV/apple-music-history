@@ -14,8 +14,8 @@ import MonthChart from './MonthChart';
 import YearsTopSongs from './YearsTopSongs';
 import TotalsBoxes from './TotalsBoxes';
 import AllSongsTable from './AllSongsTable';
-
 import TopSongBox from './TopSongBox';
+
 
 class Results extends Component {
 
@@ -143,16 +143,10 @@ class Results extends Component {
 
 
 
-
-
-
-
-
         var topSong = this.state.filteredSongs[0];
 
 
         var topSongBox = <TopSongBox song={topSong} />;
-
 
         var heatmapData = [];
         var firstDay = new Date();
@@ -176,12 +170,16 @@ class Results extends Component {
         }
 
 
+
         var daysTodayCount = Math.round((lastDate - firstDay) / (1000 * 60 * 60 * 24))
         var dayswithoutmusic = daysTodayCount - this.state.days.length;
 
         const xLabels = ['12am', '1am', '2am', '3am', '4am', '5am', '6am', '7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm', '7pm', '8pm', '9pm', '10pm', '11pm'];
         const xLabelsVisibility = [true, false, false, true, false, false, true, false, false, true, false, false, true, false, false, true, false, false, true, false, false, true, false, false]
         const yLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'];
+
+
+
 
 
         return (
