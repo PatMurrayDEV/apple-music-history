@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@sentry/browser": "^4.4.1",
     "@vtex/react-csv-parse": "^3.0.2",
     "@vx/group": "0.0.170",
     "@vx/mock-data": "0.0.179",
