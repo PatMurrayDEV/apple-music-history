@@ -291,9 +291,9 @@ class Computation {
     
                             var offset = Number(play["UTC Offset In Seconds"]) / 60;
                             var day = moment(date).utcOffset(offset);
-                            var dayint = day.weekday();
+                            var dayint = day.day();
                             var hoursint = day.hours();
-                            if (varExists(dayint) && varExists(hoursint) && varExists(heatmapData[dayint][hoursint]) && !isNaN(Number(heatmapData[dayint][hoursint])) && !isNaN(Number(play["Play Duration Milliseconds"]))) {
+                            if (varExists(dayint) && dayint < 7 && dayint > 0 && varExists(hoursint) && varExists(heatmapData[dayint][hoursint])  && varExists(Number(heatmapData[dayint][hoursint])) && !isNaN(Number(heatmapData[dayint][hoursint])) && !isNaN(Number(play["Play Duration Milliseconds"]))) {
                                 heatmapData[dayint][hoursint] = Number(heatmapData[dayint][hoursint]) + Number(play["Play Duration Milliseconds"]);
                             }
                             
