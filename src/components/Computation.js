@@ -129,9 +129,17 @@ class Computation {
 
     static calculateTop(data, excludedSongs, callback) {
 
+        const today = new Date().getFullYear();
+
         var songs = {};
         var artists = {};
         var yearSongs = {};
+        var thisYear = {
+            totalPlays: 0,
+            totalTime: 0,
+            year: today,
+            artists: {}
+        }
         var days = {};
         var months = {};
         var totals = {
@@ -308,12 +316,35 @@ class Computation {
                             };
                         }
 
+                        
+
                         if (!Computation.isSamePlay(play, previousPlay)) {
                             yearSongs[yearID][uniqueID].plays = yearSongs[yearID][uniqueID].plays + 1;
                         }
                         yearSongs[yearID][uniqueID].time = Number(yearSongs[yearID][uniqueID].time) + Number(play["Play Duration Milliseconds"]);
                         yearSongs[yearID][uniqueID].missedTime = Number(yearSongs[yearID][uniqueID].missedTime) + missedMilliseconds;
 
+
+                        if (today === yearID) {
+                            if (thisYear.artists[play["Artist Name"]] == null) {
+                                thisYear.artists[play["Artist Name"]] = {
+                                    plays: 0,
+                                    time: 0,
+                                    missedTime: 0
+                                };
+                            }
+    
+                            if (!Computation.isSamePlay(play, previousPlay)) {
+                                thisYear.totalPlays = thisYear.totalPlays + 1;
+                                thisYear.artists[play["Artist Name"]].plays = thisYear.artists[play["Artist Name"]].plays + 1;
+                            }
+    
+    
+                            thisYear.totalTime = Number(thisYear.totalTime) + Number(play["Play Duration Milliseconds"]);
+                            thisYear.artists[play["Artist Name"]].time = Number(thisYear.artists[play["Artist Name"]].time) + Number(play["Play Duration Milliseconds"]);
+                            thisYear.artists[play["Artist Name"]].missedTime = Number(thisYear.artists[play["Artist Name"]].missedTime) + missedMilliseconds;
+    
+                        }
 
                     }
 
@@ -353,6 +384,19 @@ class Computation {
             });
         }
 
+
+        var thisYearArtsistsResult = Computation.convertObjectToArray(thisYear.artists);
+        thisYearArtsistsResult = thisYearArtsistsResult.sort(function (a, b) {
+            return b.value.time - a.value.time;
+        });
+
+        var thisYearResult = {
+            totalPlays: thisYear.totalPlays,
+            totalTime: thisYear.totalTime,
+            year: today,
+            artists: thisYearArtsistsResult
+        }
+
         var resultDays = Computation.convertObjectToArray(days);
         resultDays = resultDays.sort(function (a, b) {
             return b.value.time - a.value.time;
@@ -379,7 +423,8 @@ class Computation {
             totals: totals,
             filteredSongs: filteredSongs,
             excludedSongs: excludedSongs,
-            hoursArray: heatmapData
+            hoursArray: heatmapData,
+            thisYear: thisYearResult
         })
 
         // return 

@@ -15,6 +15,7 @@ import YearsTopSongs from './YearsTopSongs';
 import TotalsBoxes from './TotalsBoxes';
 import AllSongsTable from './AllSongsTable';
 import TopSongBox from './TopSongBox';
+import Wrapped from './Wrapped';
 
 
 class Results extends Component {
@@ -41,7 +42,8 @@ class Results extends Component {
                     totals: results.totals,
                     filteredSongs: results.filteredSongs,
                     excludedSongs: results.excludedSongs,
-                    hoursArray: results.hoursArray
+                    hoursArray: results.hoursArray,
+                    thisYear: results.thisYear
                 });
             });
         }, 0);
@@ -72,7 +74,8 @@ class Results extends Component {
                     totals: results.totals,
                     filteredSongs: results.filteredSongs,
                     excludedSongs: results.excludedSongs,
-                    hoursArray: results.hoursArray
+                    hoursArray: results.hoursArray,
+                    thisYear: results.thisYear
                 });
                 
             });
@@ -96,7 +99,8 @@ class Results extends Component {
                     totals: results.totals,
                     filteredSongs: results.filteredSongs,
                     excludedSongs: results.excludedSongs,
-                    hoursArray: results.hoursArray
+                    hoursArray: results.hoursArray,
+                    thisYear: results.thisYear
                 });
             });
         }, 0);
@@ -180,17 +184,28 @@ class Results extends Component {
 
 
 
-
-
         return (
             <div>
+
+                
+
                 <Jumbotron>
+
+                    
+
                     {topSongBox}
+
+                    
+
                     <TopYears years={this.state.years} />
                     <TotalsBoxes totals={this.state.totals} songs={this.state.songs.length} artists={this.state.artists.length} day={this.state.days[0]} />
                     <div className="years artists">
                         {artistBoxes}
                     </div>
+
+                    {this.state.thisYear.totalPlays > 1 &&
+                        <Wrapped year={this.state.thisYear} songs={this.state.years[this.state.years.length - 1]}/>
+                    }
 
                     <MonthChart months={this.state.months} />
 
