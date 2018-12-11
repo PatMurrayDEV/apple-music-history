@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import numeral from 'numeral';
 import html2canvas from 'html2canvas';
+import download from 'downloadjs';
 
 class Wrapped extends Component {
 
@@ -50,7 +51,14 @@ class Wrapped extends Component {
 
                         html2canvas(document.getElementById('annualwrapped')).then(canvas => {
                             var myImage = canvas.toDataURL("image/png");
-                            window.location.href = myImage;
+
+                            download(myImage, 'mymusic.png', "image/png");
+                            
+                            // setTimeout(() => {
+                            //     window.location.href = myImage;
+                            // }, timeout);
+
+                            
                         });
 
                         
