@@ -293,7 +293,7 @@ class Computation {
                             var day = moment(date).utcOffset(offset);
                             var dayint = day.weekday();
                             var hoursint = day.hours();
-                            if (varExists(dayint) && varExists(hoursint) && varExists(heatmapData[dayint][hoursint]) && Number.isNaN(Number(play["Play Duration Milliseconds"]))) {
+                            if (varExists(dayint) && varExists(hoursint) && varExists(heatmapData[dayint][hoursint]) && !isNaN(Number(heatmapData[dayint][hoursint])) && !isNaN(Number(play["Play Duration Milliseconds"]))) {
                                 heatmapData[dayint][hoursint] = Number(heatmapData[dayint][hoursint]) + Number(play["Play Duration Milliseconds"]);
                             }
                             
