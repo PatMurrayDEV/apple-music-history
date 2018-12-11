@@ -1,6 +1,14 @@
 import moment from 'moment';
 // import {timestamp} from 'moment-timezone';
 
+function varExists(el) { 
+    if (el !== null && typeof el !== "undefined" ) { 
+      return true; 
+    } else { 
+      return false; 
+    } 
+}
+
 class Computation {
 
     static monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -127,6 +135,8 @@ class Computation {
         }
     }
 
+    
+
     static calculateTop(data, excludedSongs, callback) {
 
         const today = new Date().getFullYear();
@@ -205,129 +215,48 @@ class Computation {
 
         for (let index = 0; index < data.length; index++) {
             const play = data[index];
-            reasons[play["End Reason Type"]] = reasons[play["End Reason Type"]] + 1;
-
-            if (Computation.isPlay(play)) {
-                const uniqueID = "'" + play["Song Name"] + "' by " + play["Artist Name"];
-                
 
 
-                if (Number(play["Play Duration Milliseconds"]) > 8000 && (play["Event Type"] === "PLAY_END" || play["Event Type"] === "")) {
+            if (varExists(play["Song Name"]) && varExists(play["Artist Name"]) && varExists(play["Play Duration Milliseconds"]) && varExists(play["Media Duration In Milliseconds"]) && varExists(play["Event End Timestamp"]) && varExists(play["UTC Offset In Seconds"])) {
+                reasons[play["End Reason Type"]] = reasons[play["End Reason Type"]] + 1;
 
-                    if (songs[uniqueID] == null) {
-                        songs[uniqueID] = {
-                            plays: 0,
-                            time: 0,
-                            name: play["Song Name"],
-                            artist: play["Artist Name"],
-                            missedTime: 0,
-                            excluded: excludedSongs.includes(uniqueID)
-                        };
-                    }
-
-
-                    var missedMilliseconds = Number(play["Media Duration In Milliseconds"]) - Number(play["Play Duration Milliseconds"])
-
-                    if (Computation.isSamePlayNext(play, data[index+1])) {
-                        missedMilliseconds = 0;
-                    }
-
-                    if (!Computation.isSamePlay(play, previousPlay)) {
-                        songs[uniqueID].plays = songs[uniqueID].plays + 1;
-                    }
-
-                    songs[uniqueID].time = Number(songs[uniqueID].time) + Number(play["Play Duration Milliseconds"]);
-                    songs[uniqueID].missedTime = Number(songs[uniqueID].missedTime) + missedMilliseconds;
-
-
-                    if (!songs[uniqueID].excluded) {
-
-                        if (artists[play["Artist Name"]] == null) {
-                            artists[play["Artist Name"]] = {
-                                plays: 0,
-                                time: 0,
-                                missedTime: 0
-                            };
-                        }
-
-                        if (!Computation.isSamePlay(play, previousPlay)) {
-                            totals.totalPlays = totals.totalPlays + 1;
-                            artists[play["Artist Name"]].plays = artists[play["Artist Name"]].plays + 1;
-                        }
-
-
-                        totals.totalTime = Number(totals.totalTime) + Number(play["Play Duration Milliseconds"]);
-                        artists[play["Artist Name"]].time = Number(artists[play["Artist Name"]].time) + Number(play["Play Duration Milliseconds"]);
-                        artists[play["Artist Name"]].missedTime = Number(artists[play["Artist Name"]].missedTime) + missedMilliseconds;
-
-
-                        var date = new Date(play["Event End Timestamp"]);
-                        var dayID = date.getDate() + " " + Computation.monthNames[date.getMonth()] + ", " + date.getFullYear();
-
-                        if (days[dayID] == null) {
-                            days[dayID] = {
-                                plays: 0,
-                                time: 0
-                            };
-                        }
-
-                        if (!Computation.isSamePlay(play, previousPlay)) {
-                            days[dayID].plays = days[dayID].plays + 1;
-                        }
-                        days[dayID].time = Number(days[dayID].time) + Number(play["Play Duration Milliseconds"]);
-
-                        var offset = Number(play["UTC Offset In Seconds"]) / 60;
-                        var day = moment(date).utcOffset(offset);
-                        var dayint = day.weekday();
-                        var hoursint = day.hours();
-                        heatmapData[dayint][hoursint] = Number(heatmapData[dayint][hoursint]) + Number(play["Play Duration Milliseconds"]);
-
-
-
-                        var monthID = date.getFullYear() + "-" + Computation.monthNames[date.getMonth()];
-
-                        if (months[monthID] == null) {
-                            months[monthID] = {
-                                plays: 0,
-                                time: 0,
-                                missedTime: 0
-                            };
-                        }
-
-                        if (!Computation.isSamePlay(play, previousPlay)) {
-                            months[monthID].plays = months[monthID].plays + 1;
-                        }
-                        months[monthID].time = Number(months[monthID].time) + Number(play["Play Duration Milliseconds"]);
-                        months[monthID].missedTime = Number(months[monthID].missedTime) + missedMilliseconds;
-
-                        var yearID = date.getFullYear()
-
-                        if (yearSongs[yearID] == null) {
-                            yearSongs[yearID] = {};
-                        }
-
-                        if (yearSongs[yearID][uniqueID] == null) {
-                            yearSongs[yearID][uniqueID] = {
+                if (Computation.isPlay(play)) {
+                    const uniqueID = "'" + play["Song Name"] + "' by " + play["Artist Name"];
+                    
+    
+    
+                    if (Number(play["Play Duration Milliseconds"]) > 8000 && (play["Event Type"] === "PLAY_END" || play["Event Type"] === "")) {
+    
+                        if (songs[uniqueID] == null) {
+                            songs[uniqueID] = {
                                 plays: 0,
                                 time: 0,
                                 name: play["Song Name"],
                                 artist: play["Artist Name"],
-                                missedTime: 0
+                                missedTime: 0,
+                                excluded: excludedSongs.includes(uniqueID)
                             };
                         }
-
-                        
-
-                        if (!Computation.isSamePlay(play, previousPlay)) {
-                            yearSongs[yearID][uniqueID].plays = yearSongs[yearID][uniqueID].plays + 1;
+    
+    
+                        var missedMilliseconds = Number(play["Media Duration In Milliseconds"]) - Number(play["Play Duration Milliseconds"])
+    
+                        if (Computation.isSamePlayNext(play, data[index+1])) {
+                            missedMilliseconds = 0;
                         }
-                        yearSongs[yearID][uniqueID].time = Number(yearSongs[yearID][uniqueID].time) + Number(play["Play Duration Milliseconds"]);
-                        yearSongs[yearID][uniqueID].missedTime = Number(yearSongs[yearID][uniqueID].missedTime) + missedMilliseconds;
-
-
-                        if (today === yearID) {
-                            if (thisYear.artists[play["Artist Name"]] == null) {
-                                thisYear.artists[play["Artist Name"]] = {
+    
+                        if (!Computation.isSamePlay(play, previousPlay)) {
+                            songs[uniqueID].plays = songs[uniqueID].plays + 1;
+                        }
+    
+                        songs[uniqueID].time = Number(songs[uniqueID].time) + Number(play["Play Duration Milliseconds"]);
+                        songs[uniqueID].missedTime = Number(songs[uniqueID].missedTime) + missedMilliseconds;
+    
+    
+                        if (!songs[uniqueID].excluded) {
+    
+                            if (artists[play["Artist Name"]] == null) {
+                                artists[play["Artist Name"]] = {
                                     plays: 0,
                                     time: 0,
                                     missedTime: 0
@@ -335,22 +264,109 @@ class Computation {
                             }
     
                             if (!Computation.isSamePlay(play, previousPlay)) {
-                                thisYear.totalPlays = thisYear.totalPlays + 1;
-                                thisYear.artists[play["Artist Name"]].plays = thisYear.artists[play["Artist Name"]].plays + 1;
+                                totals.totalPlays = totals.totalPlays + 1;
+                                artists[play["Artist Name"]].plays = artists[play["Artist Name"]].plays + 1;
                             }
     
     
-                            thisYear.totalTime = Number(thisYear.totalTime) + Number(play["Play Duration Milliseconds"]);
-                            thisYear.artists[play["Artist Name"]].time = Number(thisYear.artists[play["Artist Name"]].time) + Number(play["Play Duration Milliseconds"]);
-                            thisYear.artists[play["Artist Name"]].missedTime = Number(thisYear.artists[play["Artist Name"]].missedTime) + missedMilliseconds;
+                            totals.totalTime = Number(totals.totalTime) + Number(play["Play Duration Milliseconds"]);
+                            artists[play["Artist Name"]].time = Number(artists[play["Artist Name"]].time) + Number(play["Play Duration Milliseconds"]);
+                            artists[play["Artist Name"]].missedTime = Number(artists[play["Artist Name"]].missedTime) + missedMilliseconds;
+    
+    
+                            var date = new Date(play["Event End Timestamp"]);
+                            var dayID = date.getDate() + " " + Computation.monthNames[date.getMonth()] + ", " + date.getFullYear();
+    
+                            if (days[dayID] == null) {
+                                days[dayID] = {
+                                    plays: 0,
+                                    time: 0
+                                };
+                            }
+    
+                            if (!Computation.isSamePlay(play, previousPlay)) {
+                                days[dayID].plays = days[dayID].plays + 1;
+                            }
+                            days[dayID].time = Number(days[dayID].time) + Number(play["Play Duration Milliseconds"]);
+    
+                            var offset = Number(play["UTC Offset In Seconds"]) / 60;
+                            var day = moment(date).utcOffset(offset);
+                            var dayint = day.weekday();
+                            var hoursint = day.hours();
+                            heatmapData[dayint][hoursint] = Number(heatmapData[dayint][hoursint]) + Number(play["Play Duration Milliseconds"]);
+    
+    
+    
+                            var monthID = date.getFullYear() + "-" + Computation.monthNames[date.getMonth()];
+    
+                            if (months[monthID] == null) {
+                                months[monthID] = {
+                                    plays: 0,
+                                    time: 0,
+                                    missedTime: 0
+                                };
+                            }
+    
+                            if (!Computation.isSamePlay(play, previousPlay)) {
+                                months[monthID].plays = months[monthID].plays + 1;
+                            }
+                            months[monthID].time = Number(months[monthID].time) + Number(play["Play Duration Milliseconds"]);
+                            months[monthID].missedTime = Number(months[monthID].missedTime) + missedMilliseconds;
+    
+                            var yearID = date.getFullYear()
+    
+                            if (yearSongs[yearID] == null) {
+                                yearSongs[yearID] = {};
+                            }
+    
+                            if (yearSongs[yearID][uniqueID] == null) {
+                                yearSongs[yearID][uniqueID] = {
+                                    plays: 0,
+                                    time: 0,
+                                    name: play["Song Name"],
+                                    artist: play["Artist Name"],
+                                    missedTime: 0
+                                };
+                            }
+    
+                            
+    
+                            if (!Computation.isSamePlay(play, previousPlay)) {
+                                yearSongs[yearID][uniqueID].plays = yearSongs[yearID][uniqueID].plays + 1;
+                            }
+                            yearSongs[yearID][uniqueID].time = Number(yearSongs[yearID][uniqueID].time) + Number(play["Play Duration Milliseconds"]);
+                            yearSongs[yearID][uniqueID].missedTime = Number(yearSongs[yearID][uniqueID].missedTime) + missedMilliseconds;
+    
+    
+                            if (today === yearID) {
+                                if (thisYear.artists[play["Artist Name"]] == null) {
+                                    thisYear.artists[play["Artist Name"]] = {
+                                        plays: 0,
+                                        time: 0,
+                                        missedTime: 0
+                                    };
+                                }
+        
+                                if (!Computation.isSamePlay(play, previousPlay)) {
+                                    thisYear.totalPlays = thisYear.totalPlays + 1;
+                                    thisYear.artists[play["Artist Name"]].plays = thisYear.artists[play["Artist Name"]].plays + 1;
+                                }
+        
+        
+                                thisYear.totalTime = Number(thisYear.totalTime) + Number(play["Play Duration Milliseconds"]);
+                                thisYear.artists[play["Artist Name"]].time = Number(thisYear.artists[play["Artist Name"]].time) + Number(play["Play Duration Milliseconds"]);
+                                thisYear.artists[play["Artist Name"]].missedTime = Number(thisYear.artists[play["Artist Name"]].missedTime) + missedMilliseconds;
+        
+                            }
     
                         }
-
+    
+    
                     }
-
-
                 }
             }
+
+            
 
             if (play["Event Type"] === "LYRIC_DISPLAY") {
                 totals.totalLyrics = totals.totalLyrics + 1;
@@ -413,7 +429,7 @@ class Computation {
             return b.value - a.value;
         });
 
-        callback({
+        var returnVal = {
             songs: result,
             days: resultDays,
             months: resultMonths,
@@ -425,7 +441,11 @@ class Computation {
             excludedSongs: excludedSongs,
             hoursArray: heatmapData,
             thisYear: thisYearResult
-        })
+        }
+
+        console.log(returnVal);
+
+        callback(returnVal);
 
         // return 
     }

@@ -59,6 +59,11 @@ class Banner extends Component {
                             this.props.dataResponseHandler(data);
                             
                         }}
+                        onError={err => {
+
+                            alert('Error Occured\n\n' + err.reason + '\n\n Please contact @_patmurray on twitter for more help.')
+
+                        }}
                         render={onChange => <div><input id="file" name="file" className="inputfile" type="file" onChange={onChange} /><p>Loading may take a moment... be patient</p></div>}
                     />
                     
