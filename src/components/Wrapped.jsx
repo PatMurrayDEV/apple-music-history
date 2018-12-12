@@ -8,7 +8,25 @@ class Wrapped extends Component {
 
     render() {
 
+
+        var artistCount = (this.props.year.artists.length > 5 ? 5 : this.props.year.artists.length);
+        var songCount = (this.props.songs.value.length > 5 ? 5 : this.props.songs.value.length);
+
+        console.log(this.props.songs.value.length);
+
         var titleString = "My Music — " + this.props.year.year;
+
+        var artistsDivs = []
+        for (let index = 0; index < artistCount; index++) {
+            let div = <div className="item" key={this.props.year.artists[index].key}>{this.props.year.artists[index].key}</div>;
+            artistsDivs.push(div)
+        }
+
+        var songDivs = []
+        for (let index = 0; index < songCount; index++) {
+            let div = <div className="item" key={this.props.songs.value[index].key}>{this.props.songs.value[index].value.name} <span className="artist">— {this.props.songs.value[index].value.artist}</span></div>;
+            songDivs.push(div)
+        }
 
         var div = <div className="wrapped" id="annualwrapped">
         <h1 className="title">{titleString}</h1>
@@ -23,18 +41,11 @@ class Wrapped extends Component {
             </div>
             <div className="right">
                 <h2 className="subtitle">Top Artists</h2>
-                <div className="item">{this.props.year.artists[0].key}</div>
-                <div className="item">{this.props.year.artists[1].key}</div>
-                <div className="item">{this.props.year.artists[2].key}</div>
-                <div className="item">{this.props.year.artists[3].key}</div>
-                <div className="item">{this.props.year.artists[4].key}</div>
+                {artistsDivs}
 
                 <h2 className="subtitle">Top Songs</h2>
-                <div className="item">{this.props.songs.value[0].value.name} <span className="artist">— {this.props.songs.value[0].value.artist}</span></div>
-                <div className="item">{this.props.songs.value[1].value.name} <span className="artist">— {this.props.songs.value[1].value.artist}</span></div>
-                <div className="item">{this.props.songs.value[2].value.name} <span className="artist">— {this.props.songs.value[2].value.artist}</span></div>
-                <div className="item">{this.props.songs.value[3].value.name} <span className="artist">— {this.props.songs.value[3].value.artist}</span></div>
-                <div className="item">{this.props.songs.value[4].value.name} <span className="artist">— {this.props.songs.value[4].value.artist}</span></div>
+                {songDivs}
+
             </div>
         </div>
         <h3 className="small link">music.patmurray.co</h3>
