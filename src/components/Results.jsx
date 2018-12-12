@@ -132,8 +132,9 @@ class Results extends Component {
         }
 
 
+        let artistTotalCount = (this.state.artists.length > 8 ? 8 : this.state.artists.length);
         var artistBoxes = [];
-        for (let index = 0; index < 8; index++) {
+        for (let index = 0; index < artistTotalCount; index++) {
             const artist = this.state.artists[index];
             const div = <div className="box year" key={artist.key}>
                 <div>
