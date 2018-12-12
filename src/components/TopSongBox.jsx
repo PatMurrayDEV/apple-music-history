@@ -24,7 +24,6 @@ class TopSongBox extends Component {
                     if (err) {
                         console.error(err.message);
                     } else {
-                        console.log(data);
     
                         if (data.results.length > 0) {
                             this.setState({

@@ -446,7 +446,6 @@ class Computation {
             thisYear: thisYearResult
         }
 
-        console.log(returnVal);
 
         callback(returnVal);
 

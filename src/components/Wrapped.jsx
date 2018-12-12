@@ -12,7 +12,6 @@ class Wrapped extends Component {
         var artistCount = (this.props.year.artists.length > 5 ? 5 : this.props.year.artists.length);
         var songCount = (this.props.songs.value.length > 5 ? 5 : this.props.songs.value.length);
 
-        console.log(this.props.songs.value.length);
 
         var titleString = "My Music — " + this.props.year.year;
 
