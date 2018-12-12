@@ -3,12 +3,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
 
+
 import Banner from "./components/Banner"
 import Results from "./components/Results"
 
 import Footer from './components/footer'
 
-
+import ErrorBoundary from './components/ErrorBoundary';
 
 class App extends Component {
 
@@ -38,7 +39,9 @@ class App extends Component {
 
     return (
       <div className="App">
-        {appToLoad}
+        <ErrorBoundary>
+          {appToLoad}
+        </ErrorBoundary>
         <Footer/>
       </div>
       
