@@ -1,5 +1,6 @@
 import moment from 'moment';
 // import {timestamp} from 'moment-timezone';
+import {taffy}  from 'taffydb';
 
 function varExists(el) { 
     if (el !== null && typeof el !== "undefined" ) { 
@@ -8,6 +9,8 @@ function varExists(el) {
       return false; 
     } 
 }
+
+var plays = taffy();
 
 class Computation {
 
@@ -210,6 +213,8 @@ class Computation {
         //     hoursArray: heatmapData
         // })
 
+        var playsForDB = [];
+        var idCounter = 1;
 
         var previousPlay;
 
@@ -247,6 +252,17 @@ class Computation {
     
                         if (!Computation.isSamePlay(play, previousPlay)) {
                             songs[uniqueID].plays = songs[uniqueID].plays + 1;
+                            playsForDB.push({
+                                id: idCounter,
+                                name: play["Song Name"],
+                                artist: play["Artist Name"],
+                                timeStamp: new Date(play["Event End Timestamp"]),
+                                duration: Number(play["Play Duration Milliseconds"]),
+                                excluded: excludedSongs.includes(uniqueID)
+                            })
+                            idCounter = idCounter + 1;
+                        } else {
+                            playsForDB[playsForDB.length - 1].duration = playsForDB[playsForDB.length - 1].duration + Number(play["Play Duration Milliseconds"]);
                         }
     
                         songs[uniqueID].time = Number(songs[uniqueID].time) + Number(play["Play Duration Milliseconds"]);
@@ -380,6 +396,13 @@ class Computation {
 
         }
 
+        console.log(playsForDB);
+
+        plays = taffy(playsForDB);
+
+        let jan1 = new Date('2018-01-01T00:00:00');
+
+        console.log(plays().filter({timeStamp:{lte:jan1}}).order("duration desc").first().name);
 
         var result = Computation.convertObjectToArray(songs);
         result = result.sort(function (a, b) {
