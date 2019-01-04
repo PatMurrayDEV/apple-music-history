@@ -10,7 +10,7 @@ class Wrapped extends Component {
 
 
         var artistCount = (this.props.year.artists.length > 5 ? 5 : this.props.year.artists.length);
-        var songCount = (this.props.songs.value.length > 5 ? 5 : this.props.songs.value.length);
+        var songCount = (this.props.songs.length > 5 ? 5 : this.props.songs.length);
 
 
         var titleString = "My Music — " + this.props.year.year;
@@ -23,7 +23,7 @@ class Wrapped extends Component {
 
         var songDivs = []
         for (let index = 0; index < songCount; index++) {
-            let div = <div className="item" key={this.props.songs.value[index].key}>{this.props.songs.value[index].value.name} <span className="artist">— {this.props.songs.value[index].value.artist}</span></div>;
+            let div = <div className="item" key={this.props.songs[index].key}>{this.props.songs[index].value.name} <span className="artist">— {this.props.songs[index].value.artist}</span></div>;
             songDivs.push(div)
         }
 
