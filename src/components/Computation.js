@@ -416,7 +416,8 @@ class Computation {
             totalPlays: thisYear.totalPlays,
             totalTime: thisYear.totalTime,
             year: today,
-            artists: thisYearArtsistsResult
+            artists: thisYearArtsistsResult,
+            songs: yearSongs[today]
         }
 
         var resultDays = Computation.convertObjectToArray(days);
