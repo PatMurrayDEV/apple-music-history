@@ -21,7 +21,12 @@ class ErrorBoundary extends Component {
         if (this.state.error) {
             //render fallback UI
             return (
-              <a onClick={() => Sentry.showReportDialog()}>Report feedback</a>
+              <div>
+                <Jumbotron>
+                  <h1>An Error Has Occured</h1>
+                    <a onClick={() => Sentry.showReportDialog()}>Please click here to Report feedback</a>
+                </Jumbotron>
+            </div>
             );
         } else {
             //when there's not an error, render children untouched
