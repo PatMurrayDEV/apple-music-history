@@ -209,7 +209,7 @@ class Results extends Component {
                     </div>
 
                     {this.state.thisYear.totalPlays > 1 &&
-                        <Wrapped year={this.state.thisYear} songs={this.state.years[this.state.years.length - 1]}/>
+                        <Wrapped year={this.state.thisYear} songs={this.state.thisYear.songs}/>
                     }
 
                     <MonthChart months={this.state.months} />
