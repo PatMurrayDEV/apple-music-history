@@ -412,12 +412,17 @@ class Computation {
             return b.value.time - a.value.time;
         });
 
+        var thisYearSongs = Computation.convertObjectToArray(yearSongs[today]);
+        thisYearSongs = thisYearSongs.sort(function (a, b) {
+            return b.value.time - a.value.time;
+        });
+
         var thisYearResult = {
             totalPlays: thisYear.totalPlays,
             totalTime: thisYear.totalTime,
             year: today,
             artists: thisYearArtsistsResult,
-            songs: yearSongs[today]
+            songs: thisYearSongs
         }
 
         var resultDays = Computation.convertObjectToArray(days);

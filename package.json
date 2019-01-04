@@ -28,7 +28,7 @@
     "react-intl-formatted-duration": "^2.0.2",
     "react-loader": "^2.4.5",
     "react-moment": "^0.8.2",
-    "react-scripts": "2.0.5",
+    "react-scripts": "^2.1.2",
     "react-slick": "^0.23.2",
     "react-table": "^6.8.6",
     "react-tooltip": "^3.9.0",
