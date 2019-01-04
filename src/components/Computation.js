@@ -139,7 +139,10 @@ class Computation {
 
     static calculateTop(data, excludedSongs, callback) {
 
-        const today = new Date().getFullYear();
+        let today = new Date().getFullYear();
+        if (new Date().getMonth() < 5) {
+            today = today - 1
+        }
 
         var songs = {};
         var artists = {};
