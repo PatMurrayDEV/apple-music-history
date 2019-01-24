@@ -1,6 +1,6 @@
 import moment from 'moment';
 // import {timestamp} from 'moment-timezone';
-import {taffy}  from 'taffydb';
+import alasql from 'alasql';
 
 function varExists(el) { 
     if (el !== null && typeof el !== "undefined" ) { 
@@ -9,8 +9,6 @@ function varExists(el) {
       return false; 
     } 
 }
-
-var plays = taffy();
 
 class Computation {
 
@@ -142,7 +140,10 @@ class Computation {
 
     static calculateTop(data, excludedSongs, callback) {
 
-        const today = new Date().getFullYear();
+        let today = new Date().getFullYear();
+        if (new Date().getMonth() < 5) {
+            today = today - 1
+        }
 
         var songs = {};
         var artists = {};
@@ -258,7 +259,8 @@ class Computation {
                                 artist: play["Artist Name"],
                                 timeStamp: new Date(play["Event End Timestamp"]),
                                 duration: Number(play["Play Duration Milliseconds"]),
-                                excluded: excludedSongs.includes(uniqueID)
+                                excluded: excludedSongs.includes(uniqueID),
+                                year: new Date(play["Event End Timestamp"]).getFullYear()
                             })
                             idCounter = idCounter + 1;
                         } else {
@@ -396,13 +398,9 @@ class Computation {
 
         }
 
-        console.log(playsForDB);
-
-        plays = taffy(playsForDB);
-
-        let jan1 = new Date('2018-01-01T00:00:00');
-
-        console.log(plays().filter({timeStamp:{lte:jan1}}).order("duration desc").first().name);
+        
+        var res = alasql('SELECT name, SUM(duration) FROM ? GROUP BY name, artist ORDER BY SUM(duration) DESC',[playsForDB]);
+        console.log(res)
 
         var result = Computation.convertObjectToArray(songs);
         result = result.sort(function (a, b) {
@@ -432,11 +430,17 @@ class Computation {
             return b.value.time - a.value.time;
         });
 
+        var thisYearSongs = Computation.convertObjectToArray(yearSongs[today]);
+        thisYearSongs = thisYearSongs.sort(function (a, b) {
+            return b.value.time - a.value.time;
+        });
+
         var thisYearResult = {
             totalPlays: thisYear.totalPlays,
             totalTime: thisYear.totalTime,
             year: today,
-            artists: thisYearArtsistsResult
+            artists: thisYearArtsistsResult,
+            songs: thisYearSongs
         }
 
         var resultDays = Computation.convertObjectToArray(days);
