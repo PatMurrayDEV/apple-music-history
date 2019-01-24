@@ -23,7 +23,7 @@ class Wrapped extends Component {
 
         var songDivs = []
         for (let index = 0; index < songCount; index++) {
-            let div = <div className="item" key={this.props.year.songs[index].key}>{this.props.year.songs[index].value.name} <span className="artist">— {this.props.year.songs[index].value.artist}</span></div>;
+            let div = <div className="item" key={this.props.year.songs[index].name}>{this.props.year.songs[index].name} <span className="artist">— {this.props.year.songs[index].artist}</span></div>;
             songDivs.push(div)
         }
 

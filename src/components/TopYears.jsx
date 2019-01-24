@@ -16,7 +16,7 @@ class YearBox extends Component {
     componentDidMount() {
         const year = this.props.year;
         setTimeout(() => {
-            var url = "https://itunes.apple.com/search?term=" + year.value[0].value.name + " " + year.value[0].value.artist + "&country=US&media=music&entity=musicTrack"
+            var url = "https://itunes.apple.com/search?term=" + year.songs[0].name + " " + year.songs[0].artist + "&country=US&media=music&entity=musicTrack"
             jsonp(url, null, (err, data) => {
                 if (err) {
                     console.error(err.message);
@@ -45,14 +45,14 @@ class YearBox extends Component {
         const year = this.props.year;
         const div = <div className="box year" style={style}>
             <div>
-                <h4>{year.key}</h4>
-                <h2>{year.value[0].value.name}</h2>
-                <h4>{year.value[0].value.artist}</h4>
+                <h4>{year.year}</h4>
+                <h2>{year.songs[0].name}</h2>
+                <h4>{year.songs[0].artist}</h4>
             </div>
             <div>
                 <hr className="my-2" />
-                <p className="lead">{numeral(year.value[0].value.plays).format('0,0')} Plays</p>
-                <p>{Computation.convertTime(year.value[0].value.time)}</p>
+                <p className="lead">{numeral(year.songs[0].plays).format('0,0')} Plays</p>
+                <p>{Computation.convertTime(year.songs[0].duration)}</p>
             </div>
         </div>
         return div;

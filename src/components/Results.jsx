@@ -136,15 +136,15 @@ class Results extends Component {
         var artistBoxes = [];
         for (let index = 0; index < artistTotalCount; index++) {
             const artist = this.state.artists[index];
-            const div = <div className="box year" key={artist.key}>
+            const div = <div className="box year" key={artist.name}>
                 <div>
                     <p style={{ marginBottom: 0 }}>Most played artist {index + 1}</p>
-                    <h1>{artist.key}</h1>
+                    <h1>{artist.name}</h1>
                 </div>
                 <div>
                     <hr className="my-2" />
-                    <p className="lead">{numeral(artist.value.plays).format('0,0')} Plays</p>
-                    <p>{Computation.convertTime(artist.value.time)}</p>
+                    <p className="lead">{numeral(artist.plays).format('0,0')} Plays</p>
+                    <p>{Computation.convertTime(artist.duration)}</p>
                 </div>
             </div>
             artistBoxes.push(div);
@@ -164,17 +164,17 @@ class Results extends Component {
         for (let index = 0; index < this.state.days.length; index++) {
             const day = this.state.days[index];
             heatmapData.push({
-                date: day.key,
-                count: day.value.time
+                date: day.date,
+                count: day.duration
             })
-            if (day.value.time > maxValue) {
-                maxValue = day.value.time
+            if (day.duration > maxValue) {
+                maxValue = day.duration
             }
-            if (new Date(day.key) < firstDay) {
-                firstDay = new Date(day.key)
+            if (new Date(day.date) < firstDay) {
+                firstDay = new Date(day.date)
             }
-            if (new Date(day.key) > lastDate) {
-                lastDate = new Date(day.key)
+            if (new Date(day.date) > lastDate) {
+                lastDate = new Date(day.date)
             }
         }
 

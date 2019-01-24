@@ -42,9 +42,9 @@ class TotalsBoxes extends Component {
         var highestDay = <div className="box year" key="highestDay">
             <div>
                 <p className="lead">On</p>
-                <h3>{this.state.day.key}</h3>
+                <h3>{this.state.day.date}</h3>
                 <p className="lead">you listened to</p>
-                <h3>{Computation.convertTime(this.state.day.value.time)}</h3>
+                <h3>{Computation.convertTime(this.state.day.duration)}</h3>
                 <p className="lead">of music</p>
             </div>
             <div>

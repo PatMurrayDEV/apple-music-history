@@ -46,8 +46,8 @@ class Computation {
             const element = input[index];
 
             data.labels.push(element.key);
-            data.datasets[0].data.push(element.value.time / 1000 / 60 / 60);
-            data.datasets[1].data.push(element.value.missedTime / 1000 / 60 / 60);
+            data.datasets[0].data.push(element.duration / 1000 / 60 / 60);
+            data.datasets[1].data.push(element.missedTime / 1000 / 60 / 60);
 
         }
 
@@ -144,21 +144,13 @@ class Computation {
         if (new Date().getMonth() < 5) {
             today = today - 1
         }
-
-        var songs = {};
-        var artists = {};
-        var yearSongs = {};
         var thisYear = {
             totalPlays: 0,
             totalTime: 0,
             year: today,
             artists: {}
         }
-        var days = {};
-        var months = {};
         var totals = {
-            totalPlays: 0,
-            totalTime: 0,
             totalLyrics: 0
         };
         var heatmapData = [
@@ -201,18 +193,6 @@ class Computation {
         }
 
 
-        // callback({
-        //     songs: [],
-        //     days: [],
-        //     months: [],
-        //     reasons: [],
-        //     years: [],
-        //     artists: [],
-        //     totals: totals,
-        //     filteredSongs: [],
-        //     excludedSongs: [],
-        //     hoursArray: heatmapData
-        // })
 
         var playsForDB = [];
         var idCounter = 1;
@@ -233,133 +213,41 @@ class Computation {
     
                     if (Number(play["Play Duration Milliseconds"]) > 8000 && (play["Event Type"] === "PLAY_END" || play["Event Type"] === "")) {
     
-                        if (songs[uniqueID] == null) {
-                            songs[uniqueID] = {
-                                plays: 0,
-                                time: 0,
-                                name: play["Song Name"],
-                                artist: play["Artist Name"],
-                                missedTime: 0,
-                                excluded: excludedSongs.includes(uniqueID)
-                            };
-                        }
-    
-    
-                        var missedMilliseconds = Number(play["Media Duration In Milliseconds"]) - Number(play["Play Duration Milliseconds"])
-    
-                        if (Computation.isSamePlayNext(play, data[index+1])) {
-                            missedMilliseconds = 0;
-                        }
-    
+                        var date = new Date(play["Event End Timestamp"]);
+
                         if (!Computation.isSamePlay(play, previousPlay)) {
-                            songs[uniqueID].plays = songs[uniqueID].plays + 1;
+                            var offsetForDB = Number(play["UTC Offset In Seconds"]) / 60;
+                            var dateforDB = moment(date).utcOffset(offsetForDB);
                             playsForDB.push({
                                 id: idCounter,
                                 name: play["Song Name"],
                                 artist: play["Artist Name"],
-                                timeStamp: new Date(play["Event End Timestamp"]),
+                                timeStamp: dateforDB.toDate(),
                                 duration: Number(play["Play Duration Milliseconds"]),
                                 excluded: excludedSongs.includes(uniqueID),
-                                year: new Date(play["Event End Timestamp"]).getFullYear()
-                            })
+                                year: dateforDB.toDate().getFullYear(),
+                                date: dateforDB.format('YYYY MM DD')
+                            });
                             idCounter = idCounter + 1;
                         } else {
                             playsForDB[playsForDB.length - 1].duration = playsForDB[playsForDB.length - 1].duration + Number(play["Play Duration Milliseconds"]);
                         }
     
-                        songs[uniqueID].time = Number(songs[uniqueID].time) + Number(play["Play Duration Milliseconds"]);
-                        songs[uniqueID].missedTime = Number(songs[uniqueID].missedTime) + missedMilliseconds;
+                    
     
+                        if (!excludedSongs.includes(uniqueID)) {
     
-                        if (!songs[uniqueID].excluded) {
-    
-                            if (artists[play["Artist Name"]] == null) {
-                                artists[play["Artist Name"]] = {
-                                    plays: 0,
-                                    time: 0,
-                                    missedTime: 0
-                                };
-                            }
-    
-                            if (!Computation.isSamePlay(play, previousPlay)) {
-                                totals.totalPlays = totals.totalPlays + 1;
-                                artists[play["Artist Name"]].plays = artists[play["Artist Name"]].plays + 1;
-                            }
-    
-    
-                            totals.totalTime = Number(totals.totalTime) + Number(play["Play Duration Milliseconds"]);
-                            artists[play["Artist Name"]].time = Number(artists[play["Artist Name"]].time) + Number(play["Play Duration Milliseconds"]);
-                            artists[play["Artist Name"]].missedTime = Number(artists[play["Artist Name"]].missedTime) + missedMilliseconds;
-    
-    
-                            var date = new Date(play["Event End Timestamp"]);
-                            var dayID = date.getDate() + " " + Computation.monthNames[date.getMonth()] + ", " + date.getFullYear();
-    
-                            if (days[dayID] == null) {
-                                days[dayID] = {
-                                    plays: 0,
-                                    time: 0
-                                };
-                            }
-    
-                            if (!Computation.isSamePlay(play, previousPlay)) {
-                                days[dayID].plays = days[dayID].plays + 1;
-                            }
-                            days[dayID].time = Number(days[dayID].time) + Number(play["Play Duration Milliseconds"]);
-    
+                            // heatmap
                             var offset = Number(play["UTC Offset In Seconds"]) / 60;
                             var day = moment(date).utcOffset(offset);
-                            var dayint = day.day();
+                            var dayint = day.isoWeekday();
                             var hoursint = day.hours();
-                            if (varExists(dayint) && dayint < 7 && dayint > 0 && varExists(hoursint) && varExists(heatmapData[dayint][hoursint])  && varExists(Number(heatmapData[dayint][hoursint])) && !isNaN(Number(heatmapData[dayint][hoursint])) && !isNaN(Number(play["Play Duration Milliseconds"]))) {
-                                heatmapData[dayint][hoursint] = Number(heatmapData[dayint][hoursint]) + Number(play["Play Duration Milliseconds"]);
+                            if (varExists(dayint) && dayint < 8 && dayint > 0 && varExists(hoursint) && varExists(heatmapData[dayint - 1][hoursint])  && varExists(Number(heatmapData[dayint - 1][hoursint])) && !isNaN(Number(heatmapData[dayint - 1][hoursint])) && !isNaN(Number(play["Play Duration Milliseconds"]))) {
+                                heatmapData[dayint - 1][hoursint] = Number(heatmapData[dayint - 1][hoursint]) + Number(play["Play Duration Milliseconds"]);
                             }
                             
     
-    
-    
-                            var monthID = date.getFullYear() + "-" + Computation.monthNames[date.getMonth()];
-    
-                            if (months[monthID] == null) {
-                                months[monthID] = {
-                                    plays: 0,
-                                    time: 0,
-                                    missedTime: 0
-                                };
-                            }
-    
-                            if (!Computation.isSamePlay(play, previousPlay)) {
-                                months[monthID].plays = months[monthID].plays + 1;
-                            }
-                            months[monthID].time = Number(months[monthID].time) + Number(play["Play Duration Milliseconds"]);
-                            months[monthID].missedTime = Number(months[monthID].missedTime) + missedMilliseconds;
-    
-                            var yearID = date.getFullYear()
-    
-                            if (yearSongs[yearID] == null) {
-                                yearSongs[yearID] = {};
-                            }
-    
-                            if (yearSongs[yearID][uniqueID] == null) {
-                                yearSongs[yearID][uniqueID] = {
-                                    plays: 0,
-                                    time: 0,
-                                    name: play["Song Name"],
-                                    artist: play["Artist Name"],
-                                    missedTime: 0
-                                };
-                            }
-    
-                            
-    
-                            if (!Computation.isSamePlay(play, previousPlay)) {
-                                yearSongs[yearID][uniqueID].plays = yearSongs[yearID][uniqueID].plays + 1;
-                            }
-                            yearSongs[yearID][uniqueID].time = Number(yearSongs[yearID][uniqueID].time) + Number(play["Play Duration Milliseconds"]);
-                            yearSongs[yearID][uniqueID].missedTime = Number(yearSongs[yearID][uniqueID].missedTime) + missedMilliseconds;
-    
-    
-                            if (today === yearID) {
+                            if (today === date.getFullYear()) {
                                 if (thisYear.artists[play["Artist Name"]] == null) {
                                     thisYear.artists[play["Artist Name"]] = {
                                         plays: 0,
@@ -375,9 +263,7 @@ class Computation {
         
         
                                 thisYear.totalTime = Number(thisYear.totalTime) + Number(play["Play Duration Milliseconds"]);
-                                thisYear.artists[play["Artist Name"]].time = Number(thisYear.artists[play["Artist Name"]].time) + Number(play["Play Duration Milliseconds"]);
-                                thisYear.artists[play["Artist Name"]].missedTime = Number(thisYear.artists[play["Artist Name"]].missedTime) + missedMilliseconds;
-        
+                                thisYear.artists[play["Artist Name"]].time = Number(thisYear.artists[play["Artist Name"]].time) + Number(play["Play Duration Milliseconds"]);        
                             }
     
                         }
@@ -394,44 +280,12 @@ class Computation {
             }
 
             previousPlay = play;
-
-
         }
 
-        
-        var res = alasql('SELECT name, SUM(duration) FROM ? GROUP BY name, artist ORDER BY SUM(duration) DESC',[playsForDB]);
-        console.log(res)
-
-        var result = Computation.convertObjectToArray(songs);
-        result = result.sort(function (a, b) {
-            return b.value.time - a.value.time;
-        });
-
-        var filteredSongs = []
-        for (let index = 0; index < result.length; index++) {
-            if (!result[index].value.excluded) {
-                filteredSongs.push(result[index]);
-            } 
-        }
-
-
-        var yearresult = Computation.convertObjectToArray(yearSongs);
-
-        for (let index = 0; index < yearresult.length; index++) {
-            yearresult[index].value = Computation.convertObjectToArray(yearresult[index].value);
-            yearresult[index].value = yearresult[index].value.sort(function (a, b) {
-                return b.value.time - a.value.time;
-            });
-        }
 
 
         var thisYearArtsistsResult = Computation.convertObjectToArray(thisYear.artists);
         thisYearArtsistsResult = thisYearArtsistsResult.sort(function (a, b) {
-            return b.value.time - a.value.time;
-        });
-
-        var thisYearSongs = Computation.convertObjectToArray(yearSongs[today]);
-        thisYearSongs = thisYearSongs.sort(function (a, b) {
             return b.value.time - a.value.time;
         });
 
@@ -440,41 +294,42 @@ class Computation {
             totalTime: thisYear.totalTime,
             year: today,
             artists: thisYearArtsistsResult,
-            songs: thisYearSongs
+            songs: alasql(`SELECT name, artist, COUNT(id) as plays, SUM(duration) as duration FROM ? WHERE year = ${today} AND excluded = false GROUP BY name, artist ORDER BY SUM(duration) DESC`,[playsForDB])
         }
 
-        var resultDays = Computation.convertObjectToArray(days);
-        resultDays = resultDays.sort(function (a, b) {
-            return b.value.time - a.value.time;
-        });
-
-        var resultMonths = Computation.convertObjectToArray(months);
-        var artistsResults = Computation.convertObjectToArray(artists);
-        artistsResults = artistsResults.sort(function (a, b) {
-            return b.value.time - a.value.time;
-        });
 
         var reasonsResults = Computation.convertObjectToArray(reasons);
         reasonsResults = reasonsResults.sort(function (a, b) {
             return b.value - a.value;
         });
 
-        var returnVal = {
-            songs: result,
-            days: resultDays,
-            months: resultMonths,
+
+
+        var tot = alasql(`SELECT COUNT(id) as plays, SUM(duration) as duration FROM ? WHERE excluded = false`,[playsForDB]);
+        var results = {
+            totals: {
+                totalPlays: tot[0].plays,
+                totalTime: tot[0].duration,
+                totalLyrics: totals.totalLyrics
+            },
+            years: alasql(`SELECT COUNT(id) as plays, SUM(duration) as duration, year FROM ? WHERE excluded = false GROUP BY year ORDER BY year DESC`,[playsForDB]),
+            filteredSongs: alasql(`SELECT name, artist, COUNT(id) as plays, SUM(duration) as duration FROM ? WHERE excluded = false GROUP BY name, artist ORDER BY SUM(duration) DESC`,[playsForDB]),
+            songs: alasql(`SELECT name, artist, COUNT(id) as plays, SUM(duration) as duration, excluded FROM ?  GROUP BY name, artist ORDER BY SUM(duration) DESC`,[playsForDB]),
+            days: alasql(`SELECT date, COUNT(id) as plays, SUM(duration) as duration FROM ? WHERE excluded = false GROUP BY date ORDER BY SUM(duration) DESC`,[playsForDB]),
+            months: alasql(`SELECT year, timeStamp->getMonth() as month, COUNT(id) as plays, SUM(duration) as duration FROM ? WHERE excluded = false GROUP BY year, timeStamp->getMonth() ORDER BY SUM(duration) DESC`,[playsForDB]),
             reasons: reasonsResults,
-            years: yearresult,
-            artists: artistsResults,
-            totals: totals,
-            filteredSongs: filteredSongs,
+            artists: alasql(`SELECT artist, COUNT(id) as plays, SUM(duration) as duration FROM ?  GROUP BY artist ORDER BY SUM(duration) DESC`,[playsForDB]),
             excludedSongs: excludedSongs,
             hoursArray: heatmapData,
             thisYear: thisYearResult
         }
+        for (let index = 0; index < results.years.length; index++) {           
+            results.years[index].songs = alasql(`SELECT name, artist, COUNT(id) as plays, SUM(duration) as duration FROM ? WHERE year = ${results.years[index].year} AND excluded = false GROUP BY name, artist ORDER BY SUM(duration) DESC`,[playsForDB]);
+        }
 
+        console.log(results);
 
-        callback(returnVal);
+        callback(results);
 
         // return 
     }

@@ -35,14 +35,14 @@ class AllSongsTable extends Component {
                         {
                             Header: "Name",
                             id: "name",
-                            accessor: d => d.value.name,
+                            accessor: d => d.name,
                             filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ["name"] }),
                             filterAll: true
                         },
                         {
                             Header: "Artist",
                             id: "artist",
-                            accessor: d => d.value.artist,
+                            accessor: d => d.artist,
                             filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ["artist"] }),
                             filterAll: true
                         }
@@ -54,13 +54,13 @@ class AllSongsTable extends Component {
                         {
                             Header: "Plays",
                             id: "plays",
-                            accessor: d => d.value.plays,
+                            accessor: d => d.plays,
                             filterable: false
                         },
                         {
                             Header: "Listened Time",
                             id: "time",
-                            accessor: d => d.value.time,
+                            accessor: d => d.duration,
                             Cell: row => (
                                 <div>{numeral(row.value / 1000).format('00:00:00')}</div>
                             ),
@@ -69,7 +69,7 @@ class AllSongsTable extends Component {
                         {
                             Header: "Skipped Time",
                             id: "missedTime",
-                            accessor: d => d.value.missedTime,
+                            accessor: d => d.missedTime,
                             Cell: row => (
                                 <div>{numeral(row.value / 1000).format('00:00:00')}</div>
                             ),
@@ -83,7 +83,7 @@ class AllSongsTable extends Component {
                         {
                             Header: "Exclude",
                             id: "exclude",
-                            accessor: d => d.value.excluded,
+                            accessor: d => d.excluded,
                             Cell: d => (
                                 <div><input
                                     name="isExcluded"
