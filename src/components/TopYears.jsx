@@ -3,28 +3,57 @@ import React, { Component } from 'react';
 import numeral from 'numeral';
 import Computation from "./Computation";
 import jsonp from 'jsonp';
+import alasql from 'alasql';
 
 
 class YearBox extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            imageURL: ""
+            imageURL: "",
+            searchURL: "",
+            song: this.props.song,
         };
     }
 
     componentDidMount() {
-        const year = this.props.year;
+        var url = "https://itunes.apple.com/search?term=" + this.state.song.name + " " + this.state.song.artist + "&country=US&media=music&entity=musicTrack";
+        this.searchImage(url)
+    }
+
+    componentDidUpdate() {
+        var url = "https://itunes.apple.com/search?term=" + this.state.song.name + " " + this.state.song.artist + "&country=US&media=music&entity=musicTrack";
+        if (url !== this.state.searchURL) {
+            this.searchImage(url)
+        }
+    }
+
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (prevState.song !== nextProps.song) {
+            return {
+                song: nextProps.song,
+            }
+        } else {
+            return null
+        }
+    }
+
+    searchImage(url) {
         setTimeout(() => {
-            var url = "https://itunes.apple.com/search?term=" + year.songs[0].name + " " + year.songs[0].artist + "&country=US&media=music&entity=musicTrack"
             jsonp(url, null, (err, data) => {
                 if (err) {
                     console.error(err.message);
+                    this.setState({
+                        imageURL: "",
+                        searchURL: "",
+                    });
                 } else {
 
                     if (data.results.length > 0) {
                         this.setState({
-                            imageURL: data.results[0].artworkUrl30.replace('30x30bb', '300x300bb')
+                            imageURL: data.results[0].artworkUrl30.replace('30x30bb', '300x300bb'),
+                            searchURL: url,
+                            error: false
                         });
                     }
 
@@ -38,21 +67,20 @@ class YearBox extends Component {
 
         var style = {}
         if (this.state.imageURL.length > 0) {
-            var grad = "linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.6)), url('"+ this.state.imageURL +"')";
-            style = {backgroundImage: grad}
+            var grad = "linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.6)), url('" + this.state.imageURL + "')";
+            style = { backgroundImage: grad }
         }
 
-        const year = this.props.year;
         const div = <div className="box year" style={style}>
             <div>
-                <h4>{year.year}</h4>
-                <h2>{year.songs[0].name}</h2>
-                <h4>{year.songs[0].artist}</h4>
+                <h4>{this.props.year}</h4>
+                <h2>{this.props.song.name}</h2>
+                <h4>{this.props.song.artist}</h4>
             </div>
             <div>
                 <hr className="my-2" />
-                <p className="lead">{numeral(year.songs[0].plays).format('0,0')} Plays</p>
-                <p>{Computation.convertTime(year.songs[0].duration)}</p>
+                <p className="lead">{numeral(this.props.song.plays).format('0,0')} Plays</p>
+                <p>{Computation.convertTime(this.props.song.duration)}</p>
             </div>
         </div>
         return div;
@@ -66,15 +94,16 @@ class TopYears extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            years: props.years
+            years: []
         };
     }
 
-    componentWillReceiveProps(nextProps) {
-        this.setState({ years: nextProps.years });
+    static getDerivedStateFromProps(nextProps, prevState) {
+        var years = alasql(`SELECT * FROM (SELECT year, artist, name, SUM(duration) as duration_sum, COUNT(id) as plays FROM ? GROUP BY name, artist, year ORDER BY duration_sum DESC) GROUP BY year ORDER BY year ASC`, [nextProps.plays]);
+        return {
+            years: years
+        };
     }
-
-    // background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://is4-ssl.mzstatic.com/image/thumb/Music49/v4/86/75/1c/86751c2f-2ad4-d00e-0b7f-02ba9f04b007/source/300x300bb.jpg');
 
 
     render() {
@@ -83,7 +112,7 @@ class TopYears extends Component {
 
         for (let index = 0; index < this.state.years.length; index++) {
             const year = this.state.years[index];
-            const div = <YearBox year={year} key={year.key} />
+            const div = <YearBox year={year.year} key={year.year} song={{name: year.name, artist: year.artist, duration: year.duration_sum, plays: year.plays}} />
             yearsBoxes.push(div);
 
         }

@@ -362,3 +362,9 @@ body {
  .shareButton {
     margin: 1em;
  }
+
+ .queryInput {
+    width: 90%;
+    font-family: monospace;
+ }
+

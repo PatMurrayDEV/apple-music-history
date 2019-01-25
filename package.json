@@ -27,6 +27,7 @@
     "react-heatmap-grid": "^0.5.0",
     "react-intl": "^2.7.1",
     "react-intl-formatted-duration": "^2.0.2",
+    "react-json-view": "^1.19.1",
     "react-loader": "^2.4.5",
     "react-moment": "^0.8.2",
     "react-scripts": "^2.1.2",

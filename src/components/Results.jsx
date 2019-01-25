@@ -16,6 +16,8 @@ import TotalsBoxes from './TotalsBoxes';
 import AllSongsTable from './AllSongsTable';
 import TopSongBox from './TopSongBox';
 import Wrapped from './Wrapped';
+import QueryBox from './Querier';
+import ArtistsBoxes from './ArtistsBoxes';
 
 
 class Results extends Component {
@@ -34,7 +36,6 @@ class Results extends Component {
                 this.setState({
                     songs: results.songs,
                     days: results.days,
-                    months: results.months,
                     reasons: results.reasons,
                     data: this.state.data,
                     years: results.years,
@@ -43,7 +44,8 @@ class Results extends Component {
                     filteredSongs: results.filteredSongs,
                     excludedSongs: results.excludedSongs,
                     hoursArray: results.hoursArray,
-                    thisYear: results.thisYear
+                    thisYear: results.thisYear,
+                    plays: results.plays
                 });
             });
         }, 0);
@@ -66,16 +68,15 @@ class Results extends Component {
                 this.setState({
                     songs: results.songs,
                     days: results.days,
-                    months: results.months,
                     reasons: results.reasons,
                     data: this.state.data,
-                    years: results.years,
                     artists: results.artists,
                     totals: results.totals,
                     filteredSongs: results.filteredSongs,
                     excludedSongs: results.excludedSongs,
                     hoursArray: results.hoursArray,
-                    thisYear: results.thisYear
+                    thisYear: results.thisYear,
+                    plays: results.plays
                 });
                 
             });
@@ -91,16 +92,15 @@ class Results extends Component {
                 this.setState({
                     songs: results.songs,
                     days: results.days,
-                    months: results.months,
                     reasons: results.reasons,
                     data: this.state.data,
-                    years: results.years,
                     artists: results.artists,
                     totals: results.totals,
                     filteredSongs: results.filteredSongs,
                     excludedSongs: results.excludedSongs,
                     hoursArray: results.hoursArray,
-                    thisYear: results.thisYear
+                    thisYear: results.thisYear,
+                    plays: results.plays
                 });
             });
         }, 0);
@@ -132,24 +132,6 @@ class Results extends Component {
         }
 
 
-        let artistTotalCount = (this.state.artists.length > 8 ? 8 : this.state.artists.length);
-        var artistBoxes = [];
-        for (let index = 0; index < artistTotalCount; index++) {
-            const artist = this.state.artists[index];
-            const div = <div className="box year" key={artist.name}>
-                <div>
-                    <p style={{ marginBottom: 0 }}>Most played artist {index + 1}</p>
-                    <h1>{artist.name}</h1>
-                </div>
-                <div>
-                    <hr className="my-2" />
-                    <p className="lead">{numeral(artist.plays).format('0,0')} Plays</p>
-                    <p>{Computation.convertTime(artist.duration)}</p>
-                </div>
-            </div>
-            artistBoxes.push(div);
-        }
-
 
 
         var topSong = this.state.filteredSongs[0];
@@ -160,7 +142,7 @@ class Results extends Component {
         var heatmapData = [];
         var firstDay = new Date();
         var maxValue = 0;
-        var lastDate = new Date('2015-01-01T01:00:00');
+        var lastDate = new Date('2015-05-01T01:00:00');
         for (let index = 0; index < this.state.days.length; index++) {
             const day = this.state.days[index];
             heatmapData.push({
@@ -202,17 +184,15 @@ class Results extends Component {
 
                     
 
-                    <TopYears years={this.state.years} />
+                    <TopYears plays={this.state.plays} />
                     <TotalsBoxes totals={this.state.totals} songs={this.state.songs.length} artists={this.state.artists.length} day={this.state.days[0]} />
-                    <div className="years artists">
-                        {artistBoxes}
-                    </div>
+                    <ArtistsBoxes plays={this.state.plays}/>
 
                     {this.state.thisYear.totalPlays > 1 &&
                         <Wrapped year={this.state.thisYear} songs={this.state.thisYear.songs}/>
                     }
 
-                    <MonthChart months={this.state.months} />
+                    <MonthChart plays={this.state.plays} />
 
                     <div className="box">
                         <h3>Playing Time by Date</h3>
@@ -262,7 +242,7 @@ class Results extends Component {
                         </div>
                     </div>
 
-                    <YearsTopSongs years={this.state.years} />
+                    <YearsTopSongs plays={this.state.plays} />
 
                     <ReasonsBox reasons={this.state.reasons} />
 
@@ -270,6 +250,8 @@ class Results extends Component {
                         <div className="title-flex"><h1>All Songs</h1> <Button outline color="secondary" size="sm" onClick={() => this.clearExcluded()} active={this.state.excludedSongs.length > 0}>Clear Excluded ({this.state.excludedSongs.length})</Button></div>
                         <AllSongsTable addExcluded={row => this.addExcluded(row)} songs={this.state.songs} />
                     </div>
+
+                    <QueryBox plays={this.state.plays} />
 
                 </Jumbotron>
 

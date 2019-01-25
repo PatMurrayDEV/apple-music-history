@@ -2,6 +2,8 @@ import moment from 'moment';
 // import {timestamp} from 'moment-timezone';
 import alasql from 'alasql';
 
+alasql.options.errorlog = true; 
+
 function varExists(el) { 
     if (el !== null && typeof el !== "undefined" ) { 
       return true; 
@@ -29,28 +31,29 @@ class Computation {
                     pointHighlightStroke: "rgba(220,220,220,1)",
                     data: []
                 },
-                {
-                    label: "Skipped Hours",
-                    fillColor: "rgba(220,220,220,0.2)",
-                    strokeColor: "#BCD2C5",
-                    pointColor: "rgba(220,220,220,1)",
-                    pointStrokeColor: "#fff",
-                    pointHighlightFill: "#fff",
-                    pointHighlightStroke: "rgba(220,220,220,1)",
-                    data: []
-                }
+                // {
+                //     label: "Skipped Hours",
+                //     fillColor: "rgba(220,220,220,0.2)",
+                //     strokeColor: "#BCD2C5",
+                //     pointColor: "rgba(220,220,220,1)",
+                //     pointStrokeColor: "#fff",
+                //     pointHighlightFill: "#fff",
+                //     pointHighlightStroke: "rgba(220,220,220,1)",
+                //     data: []
+                // }
             ]
         }
 
         for (let index = 0; index < input.length; index++) {
             const element = input[index];
 
-            data.labels.push(element.key);
+            data.labels.push(`${Computation.monthNames[element.month]} ${element.year}`);
             data.datasets[0].data.push(element.duration / 1000 / 60 / 60);
-            data.datasets[1].data.push(element.missedTime / 1000 / 60 / 60);
+            // data.datasets[1].data.push(element.missedTime / 1000 / 60 / 60);
 
         }
 
+        console.log(data);
 
         return data;
 
@@ -220,13 +223,14 @@ class Computation {
                             var dateforDB = moment(date).utcOffset(offsetForDB);
                             playsForDB.push({
                                 id: idCounter,
+                                songID: uniqueID,
                                 name: play["Song Name"],
                                 artist: play["Artist Name"],
                                 timeStamp: dateforDB.toDate(),
                                 duration: Number(play["Play Duration Milliseconds"]),
                                 excluded: excludedSongs.includes(uniqueID),
                                 year: dateforDB.toDate().getFullYear(),
-                                date: dateforDB.format('YYYY MM DD')
+                                date: dateforDB.format('YYYY-MM-DD')
                             });
                             idCounter = idCounter + 1;
                         } else {
@@ -266,6 +270,8 @@ class Computation {
                                 thisYear.artists[play["Artist Name"]].time = Number(thisYear.artists[play["Artist Name"]].time) + Number(play["Play Duration Milliseconds"]);        
                             }
     
+                        } else {
+                            console.log('excluded', uniqueID)
                         }
     
     
@@ -312,16 +318,17 @@ class Computation {
                 totalTime: tot[0].duration,
                 totalLyrics: totals.totalLyrics
             },
-            years: alasql(`SELECT COUNT(id) as plays, SUM(duration) as duration, year FROM ? WHERE excluded = false GROUP BY year ORDER BY year DESC`,[playsForDB]),
-            filteredSongs: alasql(`SELECT name, artist, COUNT(id) as plays, SUM(duration) as duration FROM ? WHERE excluded = false GROUP BY name, artist ORDER BY SUM(duration) DESC`,[playsForDB]),
-            songs: alasql(`SELECT name, artist, COUNT(id) as plays, SUM(duration) as duration, excluded FROM ?  GROUP BY name, artist ORDER BY SUM(duration) DESC`,[playsForDB]),
-            days: alasql(`SELECT date, COUNT(id) as plays, SUM(duration) as duration FROM ? WHERE excluded = false GROUP BY date ORDER BY SUM(duration) DESC`,[playsForDB]),
-            months: alasql(`SELECT year, timeStamp->getMonth() as month, COUNT(id) as plays, SUM(duration) as duration FROM ? WHERE excluded = false GROUP BY year, timeStamp->getMonth() ORDER BY SUM(duration) DESC`,[playsForDB]),
+            years: alasql(`SELECT COUNT(id) as plays, SUM(duration) as duration, year FROM ? WHERE excluded = false GROUP BY year ORDER BY year ASC`,[playsForDB]),
+            filteredSongs: alasql(`SELECT name, artist, songID as key, COUNT(id) as plays, SUM(duration) as duration FROM ? WHERE excluded = false GROUP BY name, artist, songID ORDER BY SUM(duration) DESC`,[playsForDB]),
+            songs: alasql(`SELECT name, artist, songID as key, COUNT(id) as plays, SUM(duration) as duration, MAX(excluded) as excluded FROM ?  GROUP BY name, artist, songID ORDER BY SUM(duration) DESC`,[playsForDB]),
+            days: alasql(`SELECT date,  COUNT(id) as plays, SUM(duration) as duration FROM ? WHERE excluded = false GROUP BY date ORDER BY SUM(duration) DESC`,[playsForDB]),
+            months: alasql(`SELECT year, timeStamp->getMonth() as month, COUNT(id) as plays, SUM(duration) as duration FROM ? WHERE excluded = false GROUP BY year, timeStamp->getMonth() ORDER BY timeStamp ASC`,[playsForDB]),
             reasons: reasonsResults,
-            artists: alasql(`SELECT artist, COUNT(id) as plays, SUM(duration) as duration FROM ?  GROUP BY artist ORDER BY SUM(duration) DESC`,[playsForDB]),
+            artists: alasql(`SELECT artist, COUNT(id) as plays, SUM(duration) as duration FROM ? WHERE excluded = false GROUP BY artist ORDER BY SUM(duration) DESC`,[playsForDB]),
             excludedSongs: excludedSongs,
             hoursArray: heatmapData,
-            thisYear: thisYearResult
+            thisYear: thisYearResult,
+            plays: playsForDB
         }
         for (let index = 0; index < results.years.length; index++) {           
             results.years[index].songs = alasql(`SELECT name, artist, COUNT(id) as plays, SUM(duration) as duration FROM ? WHERE year = ${results.years[index].year} AND excluded = false GROUP BY name, artist ORDER BY SUM(duration) DESC`,[playsForDB]);
