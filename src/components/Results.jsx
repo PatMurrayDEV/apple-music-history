@@ -147,7 +147,7 @@ class Results extends Component {
                     
 
                     <TopYears plays={this.state.plays} />
-                    <TotalsBoxes totals={this.state.totals} songs={this.state.songs.length} artists={this.state.totals.totalArtists} day={this.state.days[0]} />
+                    <TotalsBoxes totals={this.state.totals} day={alasql(`SELECT date,  COUNT(id) as plays, SUM(duration) as duration FROM ? WHERE excluded = false GROUP BY date ORDER BY SUM(duration) DESC LIMIT 1`,[this.state.plays])[0]} />
                     <ArtistsBoxes plays={this.state.plays}/>
 
                     {this.state.thisYear.totalPlays > 1 &&

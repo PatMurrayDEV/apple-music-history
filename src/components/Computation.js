@@ -308,13 +308,14 @@ class Computation {
 
 
 
-        var tot = alasql(`SELECT COUNT(id) as plays, SUM(duration) as duration FROM ? WHERE excluded = false`,[playsForDB]);
+        var tot = alasql(`SELECT SUM(plays) as plays, SUM(duration_sum) as duration, COUNT(DISTINCT artist) as artists, COUNT(DISTINCT songID) as songs FROM  (SELECT artist, name, songID, SUM(duration) as duration_sum, COUNT(id) as plays FROM ? WHERE excluded = false GROUP BY name, artist, songID ORDER BY duration_sum DESC) `,[playsForDB]);
         var results = {
             totals: {
                 totalPlays: tot[0].plays,
                 totalTime: tot[0].duration,
                 totalLyrics: totals.totalLyrics,
-                totalArtists: alasql(`SELECT COUNT(artist) as artists FROM ? WHERE excluded = false GROUP BY artist`,[playsForDB])[0].artists
+                totalSongs: tot[0].songs,
+                totalArtists: tot[0].artists
             },
             songs: alasql(`SELECT name, artist, songID as key, COUNT(id) as plays, SUM(duration) as duration, MAX(excluded) as excluded FROM ?  GROUP BY name, artist, songID ORDER BY SUM(duration) DESC`,[playsForDB]),
             reasons: reasonsResults,
