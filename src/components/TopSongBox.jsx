@@ -8,39 +8,57 @@ class TopSongBox extends Component {
     constructor() {
         super();
         this.state = {
-            imageURL: ""
+            imageURL: "",
+            searchURL: "",
         }
     }
 
     componentDidMount() {
-
-        var searchTerm = this.props.song.name + " " + this.props.song.artist;
-
-        if (this.state.currentSearch !== searchTerm) {
-
-            setTimeout(() => {
-                var url = "https://itunes.apple.com/search?term=" + this.props.song.name + " " + this.props.song.artist + "&country=US&media=music&entity=musicTrack"
-                jsonp(url, null, (err, data) => {
-                    if (err) {
-                        console.error(err.message);
-                    } else {
-    
-                        if (data.results.length > 0) {
-                            this.setState({
-                                imageURL: data.results[0].artworkUrl30.replace('30x30bb', '300x300bb')
-                            })
-                        }
-    
-                        
-                    }
-                });
-            }, 0);
-        }
-
-        
+        var url = "https://itunes.apple.com/search?term=" + this.state.song.name + " " + this.state.song.artist + "&country=US&media=music&entity=musicTrack";
+        this.searchImage(url)
     }
 
-   
+    componentDidUpdate() {
+        var url = "https://itunes.apple.com/search?term=" + this.state.song.name + " " + this.state.song.artist + "&country=US&media=music&entity=musicTrack";
+        if (url !== this.state.searchURL) {
+            this.searchImage(url)
+        }
+    }
+
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (prevState.song !== nextProps.song) {
+            return {
+                song: nextProps.song,
+            }
+        } else {
+            return null
+        }
+    }
+
+    searchImage(url) {
+        setTimeout(() => {
+            jsonp(url, null, (err, data) => {
+                if (err) {
+                    console.error(err.message);
+                    this.setState({
+                        imageURL: "",
+                        searchURL: "",
+                    });
+                } else {
+
+                    if (data.results.length > 0) {
+                        this.setState({
+                            imageURL: data.results[0].artworkUrl30.replace('30x30bb', '300x300bb'),
+                            searchURL: url,
+                            error: false
+                        });
+                    }
+
+                }
+            });
+        }, 0);
+    }
+
 
 
     render() {
@@ -56,7 +74,7 @@ class TopSongBox extends Component {
 
         var div = <div className="box" style={style}>
             <h3>Your most played song on Apple Music is</h3>
-            <h1 className="display-3"><p>{topSong.name} {topSong.artist}</p></h1>
+            <h1 className="display-3"><p>'{topSong.name}' by {topSong.artist}</p></h1>
             <p className="lead">You've played this <strong>{topSong.plays}</strong> times for a total of <strong>{Computation.convertTime(topSong.duration)}</strong>, skipping {Computation.convertTime(topSong.missedTime)}</p>
         </div>
 

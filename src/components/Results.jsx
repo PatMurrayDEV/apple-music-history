@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import { Jumbotron, Button } from 'reactstrap';
 import Computation from "./Computation";
-import numeral from 'numeral';
+import alasql from 'alasql';
 
-import CalendarHeatmap from 'react-calendar-heatmap';
-import 'react-calendar-heatmap/dist/styles.css';
-import ReactTooltip from 'react-tooltip';
+
+
 import HeatMap from 'react-heatmap-grid';
 
 import ReasonsBox from './ReasonsBox';
@@ -18,6 +17,7 @@ import TopSongBox from './TopSongBox';
 import Wrapped from './Wrapped';
 import QueryBox from './Querier';
 import ArtistsBoxes from './ArtistsBoxes';
+import DayHeatMap from './Heatmap';
 
 
 class Results extends Component {
@@ -35,13 +35,9 @@ class Results extends Component {
             Computation.calculateTop(this.state.data, this.state.excludedSongs, results => {
                 this.setState({
                     songs: results.songs,
-                    days: results.days,
                     reasons: results.reasons,
                     data: this.state.data,
-                    years: results.years,
-                    artists: results.artists,
                     totals: results.totals,
-                    filteredSongs: results.filteredSongs,
                     excludedSongs: results.excludedSongs,
                     hoursArray: results.hoursArray,
                     thisYear: results.thisYear,
@@ -67,11 +63,9 @@ class Results extends Component {
                 
                 this.setState({
                     songs: results.songs,
-                    days: results.days,
                     reasons: results.reasons,
                     data: this.state.data,
                     totals: results.totals,
-                    filteredSongs: results.filteredSongs,
                     excludedSongs: results.excludedSongs,
                     hoursArray: results.hoursArray,
                     thisYear: results.thisYear,
@@ -90,11 +84,9 @@ class Results extends Component {
             Computation.calculateTop(this.state.data, [], results => {
                 this.setState({
                     songs: results.songs,
-                    days: results.days,
                     reasons: results.reasons,
                     data: this.state.data,
                     totals: results.totals,
-                    filteredSongs: results.filteredSongs,
                     excludedSongs: results.excludedSongs,
                     hoursArray: results.hoursArray,
                     thisYear: results.thisYear,
@@ -132,36 +124,9 @@ class Results extends Component {
 
 
 
-        var topSong = this.state.filteredSongs[0];
-
-
+        var topSong = alasql(`SELECT name, artist, songID as key, COUNT(id) as plays, SUM(duration) as duration FROM ? WHERE excluded = false GROUP BY name, artist, songID ORDER BY SUM(duration) DESC LIMIT 1`,[this.state.plays])[0];
         var topSongBox = <TopSongBox song={topSong} />;
 
-        var heatmapData = [];
-        var firstDay = new Date();
-        var maxValue = 0;
-        var lastDate = new Date('2015-05-01T01:00:00');
-        for (let index = 0; index < this.state.days.length; index++) {
-            const day = this.state.days[index];
-            heatmapData.push({
-                date: day.date,
-                count: day.duration
-            })
-            if (day.duration > maxValue) {
-                maxValue = day.duration
-            }
-            if (new Date(day.date) < firstDay) {
-                firstDay = new Date(day.date)
-            }
-            if (new Date(day.date) > lastDate) {
-                lastDate = new Date(day.date)
-            }
-        }
-
-
-
-        var daysTodayCount = Math.round((lastDate - firstDay) / (1000 * 60 * 60 * 24))
-        var dayswithoutmusic = daysTodayCount - this.state.days.length;
 
         const xLabels = ['12am', '1am', '2am', '3am', '4am', '5am', '6am', '7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm', '7pm', '8pm', '9pm', '10pm', '11pm'];
         const xLabelsVisibility = [true, false, false, true, false, false, true, false, false, true, false, false, true, false, false, true, false, false, true, false, false, true, false, false]
@@ -176,14 +141,13 @@ class Results extends Component {
 
                 <Jumbotron>
 
-                    
 
                     {topSongBox}
 
                     
 
                     <TopYears plays={this.state.plays} />
-                    <TotalsBoxes totals={this.state.totals} songs={this.state.songs.length} artists={this.state.artists.length} day={this.state.days[0]} />
+                    <TotalsBoxes totals={this.state.totals} songs={this.state.songs.length} artists={this.state.totals.totalArtists} day={this.state.days[0]} />
                     <ArtistsBoxes plays={this.state.plays}/>
 
                     {this.state.thisYear.totalPlays > 1 &&
@@ -192,40 +156,7 @@ class Results extends Component {
 
                     <MonthChart plays={this.state.plays} />
 
-                    <div className="box">
-                        <h3>Playing Time by Date</h3>
-                        <CalendarHeatmap
-                            startDate={firstDay}
-                            endDate={lastDate}
-                            values={heatmapData}
-                            showWeekdayLabels={true}
-                            titleForValue={(value) => {
-                                if (value && value.date != null) {
-                                    return `${Computation.convertTime(value.count)} on ${value.date}`
-                                } else {
-                                    return ""
-                                }
-
-                            }}
-                            tooltipDataAttrs={(value) => {
-                                if (value && value.date != null) {
-                                    return { 'data-tip': `${Computation.convertTime(value.count)} on ${value.date}` }
-                                } else {
-                                    return { 'data-tip': '' }
-                                }
-
-                            }}
-                            classForValue={(value) => {
-                                if (!value) {
-                                    return 'color-empty';
-                                }
-                                var number = Math.ceil((value.count / maxValue * 100) / 10) * 10
-                                return `color-scale-${number}`;
-                            }}
-                        />
-                        <ReactTooltip />
-                        <p>There were <strong>{numeral(dayswithoutmusic).format('0,0')}</strong> out of <strong>{numeral(daysTodayCount).format('0,0')}</strong> days you didn't listen to music.</p>
-                    </div>
+                    <DayHeatMap plays={this.state.plays}/>
 
                     <div>
                         <div className="box">

@@ -99,7 +99,7 @@ class TopYears extends Component {
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
-        var years = alasql(`SELECT * FROM (SELECT year, artist, name, SUM(duration) as duration_sum, COUNT(id) as plays FROM ? GROUP BY name, artist, year ORDER BY duration_sum DESC) GROUP BY year ORDER BY year ASC`, [nextProps.plays]);
+        var years = alasql(`SELECT * FROM (SELECT year, artist, name, SUM(duration) as duration_sum, COUNT(id) as plays FROM ? WHERE excluded = false GROUP BY name, artist, year ORDER BY duration_sum DESC) GROUP BY year ORDER BY year ASC`, [nextProps.plays]);
         return {
             years: years
         };
