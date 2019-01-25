@@ -56,10 +56,11 @@ class QueryBox extends Component {
             <h5>Try some of these:</h5>
             <ul>
                 <li><h6>Top 5 Songs</h6><code>SELECT name, artist, COUNT(id) as plays, SUM(duration) as duration FROM ? GROUP BY name, artist ORDER BY SUM(duration) DESC LIMIT 5</code></li>
-                <li><h6>First Play on Apple Music</h6><code>SELECT * FROM ? LIMIT 1</code></li>
+                <li><h6>First play on Apple Music</h6><code>SELECT * FROM ? LIMIT 1</code></li>
                 <li><h6>Play stats by month</h6><code>SELECT SUM(duration) as total_milliseconds, COUNT(id) as total_plays, timeStamp->getMonth() as month, year FROM ? GROUP BY timeStamp->getMonth(), year</code></li>
                 <li><h6>Total plays</h6><code>SELECT SUM(duration) as total_milliseconds, COUNT(id) as total_plays FROM ? </code></li>
                 <li><h6>Top song per artist (using nested SELECTs!)</h6> <code>SELECT artist, FIRST(name) as top_song, FIRST(duration_sum) as top_song_duration, FIRST(plays) as top_song_plays, SUM(duration_sum) as total_duration, SUM(plays) as total_plays  FROM (     SELECT artist, name, SUM(duration) as duration_sum, COUNT(id) as plays FROM ? GROUP BY name, artist ORDER BY duration_sum DESC) GROUP BY artist ORDER BY total_duration DESC LIMIT 8</code></li>
+                <li><h6>Top song per year</h6><code>SELECT * FROM (SELECT year, artist, name, SUM(duration) as duration_sum, COUNT(id) as plays FROM ? GROUP BY name, artist, year ORDER BY duration_sum DESC) GROUP BY year ORDER BY year ASC</code></li>
             </ul>
         </div>);
     }
