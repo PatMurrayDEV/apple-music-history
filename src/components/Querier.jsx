@@ -61,7 +61,8 @@ class QueryBox extends Component {
                 <li><h6>Total plays</h6><code>SELECT SUM(duration) as total_milliseconds, COUNT(id) as total_plays FROM ? </code></li>
                 <li><h6>Top song per artist (using nested SELECTs!)</h6> <code>SELECT artist, FIRST(name) as top_song, FIRST(duration_sum) as top_song_duration, FIRST(plays) as top_song_plays, SUM(duration_sum) as total_duration, SUM(plays) as total_plays  FROM (     SELECT artist, name, SUM(duration) as duration_sum, COUNT(id) as plays FROM ? GROUP BY name, artist ORDER BY duration_sum DESC) GROUP BY artist ORDER BY total_duration DESC LIMIT 8</code></li>
                 <li><h6>Top song per year</h6><code>SELECT * FROM (SELECT year, artist, name, SUM(duration) as duration_sum, COUNT(id) as plays FROM ? GROUP BY name, artist, year ORDER BY duration_sum DESC) GROUP BY year ORDER BY year ASC</code></li>
-            </ul>
+                <li><h6>Play duration by hour as an array</h6> <code>COLUMN OF SELECT SUM(duration) FROM ? GROUP BY timeStamp->getHours() ORDER BY hour</code></li>
+             </ul>
         </div>);
     }
 
