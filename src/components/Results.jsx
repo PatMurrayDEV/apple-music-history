@@ -133,6 +133,7 @@ class Results extends Component {
         const yLabels = ['Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat', 'Sun'];
 
 
+        console.log(this.state.hoursArray);
 
         return (
             <div>
