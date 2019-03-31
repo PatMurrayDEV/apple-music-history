@@ -103,7 +103,7 @@ class Computation {
         if (previousPlay != null &&
             Computation.isPlay(previousPlay) && 
             Computation.isPlay(play) &&
-            previousPlay["Song Name"] === play["Song Name"] &&
+            previousPlay["Content Name"] === play["Content Name"] &&
             previousPlay["Artist Name"] === play["Artist Name"] &&
             previousPlay["End Position In Milliseconds"] === play["Start Position In Milliseconds"] &&
             previousPlay["End Reason Type"] === "PLAYBACK_MANUALLY_PAUSED") {
@@ -117,7 +117,7 @@ class Computation {
         if (nextPlay != null &&
             Computation.isPlay(nextPlay) && 
             Computation.isPlay(play) &&
-            nextPlay["Song Name"] === play["Song Name"] &&
+            nextPlay["Content Name"] === play["Content Name"] &&
             nextPlay["Artist Name"] === play["Artist Name"] &&
             play["End Position In Milliseconds"] === nextPlay["Start Position In Milliseconds"] &&
             play["End Reason Type"] === "PLAYBACK_MANUALLY_PAUSED") {
@@ -128,7 +128,7 @@ class Computation {
     }
 
     static isPlay(play) {
-        if (varExists(play["Song Name"]) && play["Song Name"].length > 0 && Number(play["Media Duration In Milliseconds"]) > 0 && play["Item Type"] !== "ORIGINAL_CONTENT_SHOWS" && play["Media Type"] !== "VIDEO" && play["End Reason Type"] !== "FAILED_TO_LOAD") {
+        if (varExists(play["Content Name"]) && play["Content Name"].length > 0 && Number(play["Media Duration In Milliseconds"]) > 0 && play["Item Type"] !== "ORIGINAL_CONTENT_SHOWS" && play["Media Type"] !== "VIDEO" && play["End Reason Type"] !== "FAILED_TO_LOAD") {
             return true;
         } else {
             return false;
@@ -219,22 +219,22 @@ class Computation {
         for (let index = 0; index < data.length; index++) {
             const play = data[index];
 
+            
 
-            if (varExists(play["Song Name"]) && varExists(play["Artist Name"]) && varExists(play["Play Duration Milliseconds"]) && varExists(play["Media Duration In Milliseconds"]) && varExists(play["Event End Timestamp"]) && varExists(play["UTC Offset In Seconds"])) {
+            if (varExists(play["Content Name"]) && varExists(play["Artist Name"]) && varExists(play["Play Duration Milliseconds"]) && varExists(play["Media Duration In Milliseconds"]) && varExists(play["Event End Timestamp"]) && varExists(play["UTC Offset In Seconds"])) {
                 reasons[play["End Reason Type"]] = reasons[play["End Reason Type"]] + 1;
 
+
                 if (Computation.isPlay(play)) {
-                    const uniqueID = "'" + play["Song Name"] + "' by " + play["Artist Name"];
+                    const uniqueID = "'" + play["Content Name"] + "' by " + play["Artist Name"];
                     
-    
-    
-                    if (Number(play["Play Duration Milliseconds"]) > 8000 && (play["Event Type"] === "PLAY_END" || play["Event Type"] === "")) {
+                    if (Number(play["Play Duration Milliseconds"]) > 8000 /*&& (play["Event Type"] === "PLAY_END" || play["Event Type"] === "")*/) {
     
                         if (songs[uniqueID] == null) {
                             songs[uniqueID] = {
                                 plays: 0,
                                 time: 0,
-                                name: play["Song Name"],
+                                name: play["Content Name"],
                                 artist: play["Artist Name"],
                                 missedTime: 0,
                                 excluded: excludedSongs.includes(uniqueID)
@@ -250,6 +250,7 @@ class Computation {
     
                         if (!Computation.isSamePlay(play, previousPlay)) {
                             songs[uniqueID].plays = songs[uniqueID].plays + 1;
+
                         }
     
                         songs[uniqueID].time = Number(songs[uniqueID].time) + Number(play["Play Duration Milliseconds"]);
@@ -329,7 +330,7 @@ class Computation {
                                 yearSongs[yearID][uniqueID] = {
                                     plays: 0,
                                     time: 0,
-                                    name: play["Song Name"],
+                                    name: play["Content Name"],
                                     artist: play["Artist Name"],
                                     missedTime: 0
                                 };
@@ -374,9 +375,9 @@ class Computation {
 
             
 
-            if (play["Event Type"] === "LYRIC_DISPLAY") {
-                totals.totalLyrics = totals.totalLyrics + 1;
-            }
+            // if (play["Event Type"] === "LYRIC_DISPLAY") {
+            //     totals.totalLyrics = totals.totalLyrics + 1;
+            // }
 
             previousPlay = play;
 
