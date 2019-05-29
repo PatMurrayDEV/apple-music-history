@@ -16,6 +16,7 @@ const keys = [
     "Store Country Name",
     "Start Position In Milliseconds",
     "Play Duration Milliseconds",
+    "Event Type",
     "End Position In Milliseconds",
     "Metrics Client Id",
     "Media Type",
