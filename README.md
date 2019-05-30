@@ -1,3 +1,6 @@
+[![Netlify Status](https://api.netlify.com/api/v1/badges/e207d990-1ee1-4e26-92b0-b549f20acb0e/deploy-status)](https://app.netlify.com/sites/ecstatic-benz-b66b84/deploys)
+
+
 # [Apple Music History](https://music.patmurray.co)
 
 Client React app to get info from your apple music history 
