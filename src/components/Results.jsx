@@ -128,7 +128,8 @@ class Results extends Component {
         }
 
         if (this.state.songs.length <= 1) {
-            return(<div className="errorDiv box">There was an error processing your data <span role="img" aria-label="sad face emoji">☹️</span> , please double check the loaded file is correct: "<em>Apple Music Play Activity.<strong>csv</strong></em>".<br/>For more help please follow this helpful <a href="https://www.macrumors.com/2018/11/29/web-app-apple-music-history/">guide from MacRumors</a>.<br/><br/>If problems persist, please contact me on Twitter <a href="http://twitter.com/_patmurray">@_patmurray</a><br/><br/><a href="http://music.patmurray.co">Reload Page...</a></div>)
+            return(<div className="errorDiv box">There was an error processing your data <span role="img" aria-label="sad face emoji">☹️</span> , please double check the loaded file is correct: "<em>Apple Music Play Activity.<strong>csv</strong></em>".<br/>For more help please follow this helpful <a href="https://www.macrumors.com/2018/11/29/web-app-apple-music-history/">guide from MacRumors</a>.<br/><br/>If problems persist, please check the column titles against <a href="https://github.com/PatMurrayDEV/apple-music-history/blob/master/src/components/Banner.jsx">this file</a> or <a href="https://github.com/PatMurrayDEV/apple-music-history/blob/master/src/components/Banner.jsx">create a pull request</a>. 
+                    <br/><br/><a href="http://music.patmurray.co">Reload Page...</a></div>)
         }
 
 
